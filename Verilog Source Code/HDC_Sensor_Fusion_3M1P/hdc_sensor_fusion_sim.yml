@@ -1,0 +1,32 @@
+sim.inputs.top_module: "hdc_sensor_fusion"
+sim.inputs.tb_dut: "dut"
+sim.inputs.tb_name: "hdc_sensor_fusion_tb"
+
+sim.inputs.input_files_meta: "append"
+sim.inputs.input_files:
+   - "src/HDC_Sensor_Fusion_3M1P/hdc_sensor_fusion.sv"
+   - "src/HDC_Sensor_Fusion_3M1P/memory_wrapper.sv" 
+   - "src/HDC_Sensor_Fusion_3M1P/hdc_sensor_fusion_tb.sv"
+   - "src/HDC_Sensor_Fusion_3M1P/associative_memory.sv"
+   - "src/HDC_Sensor_Fusion_3M1P/hv2000_binary_adder.sv"
+   - "src/HDC_Sensor_Fusion_3M1P/fuser.v"
+   - "src/HDC_Sensor_Fusion_3M1P/memory_controller.sv"
+   - "src/HDC_Sensor_Fusion_3M1P/spatial_encoder.v"
+   - "src/HDC_Sensor_Fusion_3M1P/temporal_encoder.v"
+
+sim.inputs:
+  timescale: "1ps/1ps"
+  options:
+    - "-notice"
+    - "-line"
+    - "-debug_pp"
+    - "-debug_all"
+    - "+v2k"
+    - "+lint=all,noVCDE"
+    - "+incdir+../../src/HDC_Sensor_Fusion_3M1P"
+    - "+define+CLOCK_PERIOD=0.01"
+    - "-sverilog"
+
+  execute_sim: true
+  execution_flags: ["+verbose=1"]
+

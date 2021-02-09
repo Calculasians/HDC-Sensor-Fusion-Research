@@ -1,0 +1,190 @@
+For all of these, we are only using 105 out of the 110 possible combinations
+
+Reva gave these mappings:
+- 1st letter: item memory HV
+- 2nd letter: projection memory positive HV
+- 3rd letter: projection memory negative HV
+
+hv_selection = ['AVU','ATS','ARQ','APO','ANM','ALK','AJI','AHG','AFE','ADC',	# 10
+				'BWV','BUT','BSR','BQP','BON','BML','BKJ','BIH','BGF','BED',	# 20
+				'CVU','CTS','CRQ','CPO','CNM','CLK','CJI','CHG','CFE',			# 29
+				'DWV','DUT','DSR','DQP','DON','DML','DKJ','DIH','DGF',			# 38
+				'EVU','ETS','ERQ','EPO','ENM','ELK','EJI','EHG',				# 46
+				'FWV','FUT','FSR','FQP','FON','FML','FKJ','FIH',				# 54
+				'GVU','GTS','GRQ','GPO','GNM','GLK','GJI',						# 61
+				'HWV','HUT','HSR','HQP','HON','HML','HKJ',						# 68
+				'IVU','ITS','IRQ','IPO','INM','ILK',							# 74
+				'JWV','JUT','JSR','JQP','JON','JML',							# 80
+				'KVU','KTS','KRQ','KPO','KNM',									# 85
+				'LWV','LUT','LSR','LQP','LON',									# 90
+				'MVU','MTS','MRQ','MPO',										# 94
+				'NWV','NUT','NSR','NQP',										# 98
+				'OVU','OTS','ORQ',												# 101
+				'PWV','PUT','PSR',												# 104
+				'QVU','QTS',													# 106
+				'RWV','RUT',													# 108
+				'SVU',															# 109
+				'TWV']															# 110
+
+																				num channels
+
+In this case, we are going row order!
+Notice that in this case, we only need to get 1 IM HV per row (once every several channel)! 
+However, for every channel we might need to fetch:
+- 0 HV 								: 3 modalities have feature == 0
+- 1 HV (only projm_pos or projm_neg): at least 1 modalities have feature != 0 or all the modalities have the same feature value
+- 2 HV (both projm)					: the modalities have different feature values
+
+Worst case scenario : need to fetch 2 HVs for every channel
+So for 105 channels:
+- need to fetch 17 IM HVs
+- 2 * 105 = 210 projection memory HVs
+Total = 237 memory requests made
+
+For a tighter upper bound, notice that only EEG has channel 78-105, this means that there we will for sure only need to fetch 1 projection memory HV
+So for 105 channels:
+- need to fetch 17 IM HVs
+- 2 * 77 + 28 = 182 projection memory HVs
+Total = 182 memory requests made
+
+So on average, 182/105 = 1.73 memory requests is made per channel (upper bound)
+In reality, from the given dataset that we have, we get on average 1.487 memory requests per channel
+
+//---------//
+// HOWEVER //
+//---------//
+
+Notice that we do not really care about which set of 3 letters go to which channel as long as there is a 1:1 mapping!
+Thus, we can safely rearrange the orders to be like the following:
+
+hv_selection = ['AVU','ATS','ARQ','APO','ANM','ALK','AJI','AHG','AFE','ADC',
+				'CVU','CTS','CRQ','CPO','CNM','CLK','CJI','CHG','CFE',
+				'EVU','ETS','ERQ','EPO','ENM','ELK','EJI','EHG',
+				'GVU','GTS','GRQ','GPO','GNM','GLK','GJI',
+				'IVU','ITS','IRQ','IPO','INM','ILK',
+				'KVU','KTS','KRQ','KPO','KNM',
+				'MVU','MTS','MRQ','MPO',
+				'OVU','OTS','ORQ',
+				'QVU','QTS',
+				'SVU',
+
+				'BWV','BUT','BSR','BQP','BON','BML','BKJ','BIH','BGF','BED',		
+				'DWV','DUT','DSR','DQP','DON','DML','DKJ','DIH','DGF',
+				'FWV','FUT','FSR','FQP','FON','FML','FKJ','FIH',
+				'HWV','HUT','HSR','HQP','HON','HML','HKJ',
+				'JWV','JUT','JSR','JQP','JON','JML',
+				'LWV','LUT','LSR','LQP','LON',
+				'NWV','NUT','NSR','NQP',
+				'PWV','PUT','PSR',
+				'RWV','RUT',
+				'TWV']
+
+			#	20    38    54    68    80    90    98    104   108   110 		-> num channels
+
+Then we noticed that going colum major might actually work better. 
+
+In this case try going column order instead!
+Notice that in this case, we only need to instead fetch 4 projection memory HVs per column!
+However, we need to fetch a new IM HV for every channel instead.
+In this case, for 105 channels:
+- need to fetch 105 IM HVs
+- 4 * 9 = 36 projection memory HVs
+Total = 141 memory requests made
+
+So on average, 141/105 = 1.34 memory requests is made per channel (exact number not an upper bound)
+
+--------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------
+
+That is if we only have 1 SRAM!
+
+--------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------
+
+Since we have 3 HVs per set (IM, projM_pos, projM_neg), we at least need to have 3 SRAMs to be able to access all 3 at once.
+
+So we went ahead and try to divide the 23 HVs to 3 different SRAMs
+The question became, how should we divide these HVs in the different SRAMs?
+
+Here is how we decide to divide them:
+SRAM_0	: B C F I L O R U 
+SRAM_1	: A D G J M P S V 
+SRAM_2	:   E H K N Q T W 
+
+We need to flipped A and B because for the last combination ('AFE' = 105 channel), we want the 'A' nd the 'F' to be in 2 different SRAMs
+
+Notice that since we are storing the 2 projection vectors, the only thing that we need to make sure is that when we do fetch both of them, they do not conflict with the IM HV (the 3 of them come from 3 different SRAMs).
+
+Hence, we reorder the hv_selection again to be (throwing the useless last 5 HVs):
+
+hv_selection =                 ['EVU','CTS','ARQ','EPO','CNM','ALK','EJI','CHG','AFE',
+				'CVU','ATS','CRQ','CPO','ANM','CLK','CJI','AHG',
+				'AVU','ETS','ERQ','APO','ENM','ELK','AJI','EHG',
+				'GVU','GTS','GRQ','GPO','GNM','GLK','GJI',
+				'IVU','ITS','IRQ','IPO','INM','ILK',
+				'KVU','KTS','KRQ','KPO','KNM',
+				'MVU','MTS','MRQ','MPO',
+				'OVU','OTS','ORQ',
+				'QVU','QTS',
+				'SVU',
+
+				'BWV','DUT','HSR','BQP','DON','HML','BKJ','DIH',	
+				'DWV','BUT','DSR','DQP','BON','DML','DKJ','BIH',
+				'FWV','FUT','FSR','FQP','FON','FML','FKJ','FIH',
+				'HWV','HUT','BSR','HQP','HON','BML','HKJ',
+				'JWV','JUT','JSR','JQP','JON','JML',
+				'LWV','LUT','LSR','LQP','LON',
+				'NWV','NUT','NSR','NQP',
+				'PWV','PUT','PSR',
+				'RWV','RUT',
+				'TWV']
+
+			#	20    38    54    68    80    90    98    104   105 		-> num channels
+
+SRAM_0	: B C F I L O R U 	->  0  1  2  3  4  5  6  7
+SRAM_1	: A D G J M P S V 	->  8  9 10 11 12 13 14 15 
+SRAM_2	:   E H K N Q T W 	-> 16 17 18 19 20 21 22 
+
+Transposing it to be row major order, it becomes:
+
+hv_selection = ['EVU','CVU','AVU','GVU','IVU','KVU','MVU','OVU','QVU','SVU',	# 10
+				'BWV','DWV','FWV','HWV','JWV','LWV','NWV','PWV','RWV','TWV',	# 20
+				'CTS','ATS','ETS','GTS','ITS','KTS','MTS','OTS','QTS',			# 29
+				'DUT','BUT','FUT','HUT','JUT','LUT','NUT','PUT','RUT',			# 38
+				'ARQ','CRQ','ERQ','GRQ','IRQ','KRQ','MRQ','ORQ',				# 46
+				'HSR','DSR','FSR','BSR','JSR','LSR','NSR','PSR'					# 54
+				'EPO','CPO','APO','GPO','IPO','KPO','MPO',						# 61
+				'BQP','DQP','FQP','HQP','JQP','LQP','NQP',						# 68
+				'CNM','ANM','ENM','GNM','INM','KNM',							# 74
+				'DON','BON','FON','HON','JON','LON',							# 80
+				'ALK','CLK','ELK','GLK','ILK',									# 85
+				'HML','DML','FML','BML','JML',									# 90
+				'EJI','CJI','AJI','GJI',										# 94
+				'BKJ','DKJ','FKJ','HKJ',										# 98
+				'CHG','AHG','EHG',												# 101
+				'DIH','BIH','FIH',												# 104
+				'AFE']															# 105
+
+Hence, we only need to request 3 HVs in the first column!
+The rest will only need 1 memory request for the IM HV.
+
+Thus, we only need to make sure that the set of 3 HVs in the first column always come from different SRAMs!
+In this case, we VERIFIED it that they work!
+
+As such, even when we need to request 3 HVs, we can do all the requests in parallel! 
+As a result, all these HVs can be accessed in 105 cycles!
+
+--------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------
+
+To make this easy to code in Verilog, we created a mapping (letter to address) in this format:
+
+SRAM_0	: B C F I L O R U 	->  0  1  2  3  4  5  6  7
+SRAM_1	: A D G J M P S V 	->  8  9 10 11 12 13 14 15 
+SRAM_2	:   E H K N Q T W 	-> 16 17 18 19 20 21 22 
+
+This makes life easy because given an address, we can directly tell which SRAM to get the data from!
+We can just see the most significant bit:
+- 00???	-> SRAM_0
+- 01??? -> SRAM_1
+- 1???? -> SRAM_2

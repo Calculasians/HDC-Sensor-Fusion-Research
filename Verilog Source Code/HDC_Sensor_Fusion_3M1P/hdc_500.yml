@@ -1,0 +1,308 @@
+# Technology Setup is done in hammer-tstech28-plugin/bwrc.yml.
+vlsi.core.max_threads: 24
+
+# File inputs
+synthesis.inputs:
+  input_files: [
+                "src/HDC_Sensor_Fusion_3M1P/hdc_sensor_fusion.sv",
+                "src/HDC_Sensor_Fusion_3M1P/memory_wrapper.sv",
+                "src/HDC_Sensor_Fusion_3M1P/associative_memory.sv",
+                "src/HDC_Sensor_Fusion_3M1P/spatial_encoder.v",
+                "src/HDC_Sensor_Fusion_3M1P/temporal_encoder.v",
+                "src/HDC_Sensor_Fusion_3M1P/fuser.v",
+                "src/HDC_Sensor_Fusion_3M1P/memory_controller.sv",
+                "src/HDC_Sensor_Fusion_3M1P/hv2000_binary_adder.sv"
+               ]
+  top_module: "hdc_sensor_fusion"
+
+# General Hammer Inputs
+vlsi.inputs.sram_parameters: "src/sram_inputs.json"
+vlsi.inputs.sram_parameters_meta: ["transclude", "json2list"]
+
+# Hammer will auto-generate a CPF for simple power designs; see hammer/src/hammer-vlsi/defaults.yml for more info
+vlsi.inputs.power_spec_mode: "auto"
+vlsi.inputs.power_spec_type: "cpf"
+
+# Specify clock signals
+vlsi.inputs.clocks: [
+  {name: "clk", period: "3.3ns", uncertainty: "0.1ns"}
+]
+
+vlsi.inputs.custom_sdc_constraints: [
+  "set_input_delay -clock clk 0 [all_inputs]",
+  "set_output_delay -clock clk 0 [all_outputs]"
+]
+
+# Generate Make include to aid in flow 
+vlsi.core.build_system: make
+
+# Power Straps
+par.power_straps_mode: generate
+par.generate_power_straps_method: by_tracks
+par.blockage_spacing: 2.0
+par.generate_power_straps_options:
+  by_tracks:
+    strap_layers:
+      - M3
+      - M4
+      - M5
+      - M6
+      - M7
+      - M8
+      - M9
+    pin_layers:
+      - M9
+    track_width: 7 # minimum allowed for M2 & M3
+    track_spacing: 0
+    track_spacing_M3: 1 # to avoid M2 shorts at higher density
+    track_start: 10
+    power_utilization: 0.05
+    power_utilization_M8: 1.0
+    power_utilization_M9: 1.0
+
+# Placement Constraints
+vlsi.inputs.placement_constraints:
+  - path: "hdc_sensor_fusion"
+    type: toplevel
+    x: 0
+    y: 0
+    width: 2500
+    height: 2300
+    margins:
+      left: 0
+      right: 0
+      top: 0
+      bottom: 0
+  - path: "hdc_sensor_fusion/MEMORY_1/sram1"
+    type: hardmacro
+    x: 100
+    y: 1000
+    master: "TSDN28HPMA16X72M4FW"
+  - path: "hdc_sensor_fusion/MEMORY_1/sram2"
+    type: hardmacro
+    x: 150
+    y: 1000
+    master: "TSDN28HPMA16X72M4FW"
+  - path: "hdc_sensor_fusion/MEMORY_1/sram3"
+    type: hardmacro
+    x: 200
+    y: 1000
+    master: "TSDN28HPMA16X72M4FW"
+  - path: "hdc_sensor_fusion/MEMORY_1/sram4"
+    type: hardmacro
+    x: 250
+    y: 1000
+    master: "TSDN28HPMA16X72M4FW"
+  - path: "hdc_sensor_fusion/MEMORY_1/sram5"
+    type: hardmacro
+    x: 300
+    y: 1000
+    master: "TSDN28HPMA16X72M4FW"
+  - path: "hdc_sensor_fusion/MEMORY_1/sram6"
+    type: hardmacro
+    x: 350
+    y: 1000
+    master: "TSDN28HPMA16X72M4FW"
+  - path: "hdc_sensor_fusion/MEMORY_1/sram7"
+    type: hardmacro
+    x: 400
+    y: 1000
+    master: "TSDN28HPMA16X72M4FW"
+  - path: "hdc_sensor_fusion/MEMORY_1/sram8"
+    type: hardmacro
+    x: 450
+    y: 1000
+    master: "TSDN28HPMA16X72M4FW"
+  - path: "hdc_sensor_fusion/MEMORY_1/sram9"
+    type: hardmacro
+    x: 500
+    y: 1000
+    master: "TSDN28HPMA16X72M4FW"
+  - path: "hdc_sensor_fusion/MEMORY_1/sram10"
+    type: hardmacro
+    x: 550
+    y: 1000
+    master: "TSDN28HPMA16X72M4FW"
+  - path: "hdc_sensor_fusion/MEMORY_1/sram11"
+    type: hardmacro
+    x: 600
+    y: 1000
+    master: "TSDN28HPMA16X72M4FW"
+  - path: "hdc_sensor_fusion/MEMORY_1/sram12"
+    type: hardmacro
+    x: 650
+    y: 1000
+    master: "TSDN28HPMA16X72M4FW"
+  - path: "hdc_sensor_fusion/MEMORY_1/sram13"
+    type: hardmacro
+    x: 700
+    y: 1000
+    master: "TSDN28HPMA16X72M4FW"
+  - path: "hdc_sensor_fusion/MEMORY_1/sram14"
+    type: hardmacro
+    x: 750
+    y: 1000
+    master: "TSDN28HPMA16X64M4FW"
+  
+  - path: "hdc_sensor_fusion/MEMORY_2/sram1"
+    type: hardmacro
+    x: 850
+    y: 1000
+    master: "TSDN28HPMA16X72M4FW"
+  - path: "hdc_sensor_fusion/MEMORY_2/sram2"
+    type: hardmacro
+    x: 900
+    y: 1000
+    master: "TSDN28HPMA16X72M4FW"
+  - path: "hdc_sensor_fusion/MEMORY_2/sram3"
+    type: hardmacro
+    x: 950
+    y: 1000
+    master: "TSDN28HPMA16X72M4FW"
+  - path: "hdc_sensor_fusion/MEMORY_2/sram4"
+    type: hardmacro
+    x: 1000
+    y: 1000
+    master: "TSDN28HPMA16X72M4FW"
+  - path: "hdc_sensor_fusion/MEMORY_2/sram5"
+    type: hardmacro
+    x: 1050
+    y: 1000
+    master: "TSDN28HPMA16X72M4FW"
+  - path: "hdc_sensor_fusion/MEMORY_2/sram6"
+    type: hardmacro
+    x: 1100
+    y: 1000
+    master: "TSDN28HPMA16X72M4FW"
+  - path: "hdc_sensor_fusion/MEMORY_2/sram7"
+    type: hardmacro
+    x: 1150
+    y: 1000
+    master: "TSDN28HPMA16X72M4FW"
+  - path: "hdc_sensor_fusion/MEMORY_2/sram8"
+    type: hardmacro
+    x: 1200
+    y: 1000
+    master: "TSDN28HPMA16X72M4FW"
+  - path: "hdc_sensor_fusion/MEMORY_2/sram9"
+    type: hardmacro
+    x: 1250
+    y: 1000
+    master: "TSDN28HPMA16X72M4FW"
+  - path: "hdc_sensor_fusion/MEMORY_2/sram10"
+    type: hardmacro
+    x: 1300
+    y: 1000
+    master: "TSDN28HPMA16X72M4FW"
+  - path: "hdc_sensor_fusion/MEMORY_2/sram11"
+    type: hardmacro
+    x: 1350
+    y: 1000
+    master: "TSDN28HPMA16X72M4FW"
+  - path: "hdc_sensor_fusion/MEMORY_2/sram12"
+    type: hardmacro
+    x: 1400
+    y: 1000
+    master: "TSDN28HPMA16X72M4FW"
+  - path: "hdc_sensor_fusion/MEMORY_2/sram13"
+    type: hardmacro
+    x: 1450
+    y: 1000
+    master: "TSDN28HPMA16X72M4FW"
+  - path: "hdc_sensor_fusion/MEMORY_2/sram14"
+    type: hardmacro
+    x: 1500
+    y: 1000
+    master: "TSDN28HPMA16X64M4FW"
+
+  - path: "hdc_sensor_fusion/MEMORY_3/sram1"
+    type: hardmacro
+    x: 1600
+    y: 1000
+    master: "TSDN28HPMA16X72M4FW"
+  - path: "hdc_sensor_fusion/MEMORY_3/sram2"
+    type: hardmacro
+    x: 1650
+    y: 1000
+    master: "TSDN28HPMA16X72M4FW"
+  - path: "hdc_sensor_fusion/MEMORY_3/sram3"
+    type: hardmacro
+    x: 1700
+    y: 1000
+    master: "TSDN28HPMA16X72M4FW"
+  - path: "hdc_sensor_fusion/MEMORY_3/sram4"
+    type: hardmacro
+    x: 1750
+    y: 1000
+    master: "TSDN28HPMA16X72M4FW"
+  - path: "hdc_sensor_fusion/MEMORY_3/sram5"
+    type: hardmacro
+    x: 1800
+    y: 1000
+    master: "TSDN28HPMA16X72M4FW"
+  - path: "hdc_sensor_fusion/MEMORY_3/sram6"
+    type: hardmacro
+    x: 1850
+    y: 1000
+    master: "TSDN28HPMA16X72M4FW"
+  - path: "hdc_sensor_fusion/MEMORY_3/sram7"
+    type: hardmacro
+    x: 1900
+    y: 1000
+    master: "TSDN28HPMA16X72M4FW"
+  - path: "hdc_sensor_fusion/MEMORY_3/sram8"
+    type: hardmacro
+    x: 1950
+    y: 1000
+    master: "TSDN28HPMA16X72M4FW"
+  - path: "hdc_sensor_fusion/MEMORY_3/sram9"
+    type: hardmacro
+    x: 2000
+    y: 1000
+    master: "TSDN28HPMA16X72M4FW"
+  - path: "hdc_sensor_fusion/MEMORY_3/sram10"
+    type: hardmacro
+    x: 2050
+    y: 1000
+    master: "TSDN28HPMA16X72M4FW"
+  - path: "hdc_sensor_fusion/MEMORY_3/sram11"
+    type: hardmacro
+    x: 2100
+    y: 1000
+    master: "TSDN28HPMA16X72M4FW"
+  - path: "hdc_sensor_fusion/MEMORY_3/sram12"
+    type: hardmacro
+    x: 2150
+    y: 1000
+    master: "TSDN28HPMA16X72M4FW"
+  - path: "hdc_sensor_fusion/MEMORY_3/sram13"
+    type: hardmacro
+    x: 2200
+    y: 1000
+    master: "TSDN28HPMA16X72M4FW"
+  - path: "hdc_sensor_fusion/MEMORY_3/sram14"
+    type: hardmacro
+    x: 2250
+    y: 1000
+    master: "TSDN28HPMA16X64M4FW"
+  - path: "hdc_sensor_fusion/place_obs_bottom"
+    type: obstruction
+    obs_type: ["place"]
+    x: 0
+    y: 0
+    width: 2500
+    height: 1.08
+
+# Pin placement constraints
+vlsi.inputs.pin_mode: generated
+vlsi.inputs.pin.generate_mode: semi_auto
+vlsi.inputs.pin.assignments: [
+  {pins: "*", layers: ["M5", "M7"], side: "bottom"}
+]
+
+# SRAM Compiler compiler options
+vlsi.core.sram_generator_tool: "sram_compiler"
+# You should specify a location for the SRAM generator in the tech plugin
+vlsi.core.sram_generator_tool_path: ["/tools/B/daniels/hammer-tsmc28/hammer-tstech28-plugin"]
+vlsi.core.sram_generator_tool_path_meta: "append"
+

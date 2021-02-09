@@ -1,0 +1,29 @@
+sim.inputs.tb_name: "hdc_sensor_fusion_tb"
+
+sim.inputs.input_files_meta: "append"
+sim.inputs.input_files:
+    - "src/../build/par-rundir/hdc_sensor_fusion.sim.v"
+    - "src/HDC_Sensor_Fusion_3M1P/hdc_sensor_fusion_tb.sv"
+
+sim.inputs.level: "gl"
+
+sim.inputs:
+  timing_annotated: true
+  timescale: "1ns/1ps"
+  options:
+    - "-notice"
+    - "-line"
+    - "+v2k"
+    - "+lint=all,noVCDE"
+    - "+incdir+../../src/HDC_Sensor_Fusion_3M1P"
+    - "+define+CLOCK_PERIOD=4"
+    - "-sverilog"
+    - "-debug_acc+pp"
+    - "-debug_acc+all"
+    - "-debug_region+cell+encrypt"
+
+  execute_sim: true
+  execution_flags: ["+verbose=1"]
+
+
+
