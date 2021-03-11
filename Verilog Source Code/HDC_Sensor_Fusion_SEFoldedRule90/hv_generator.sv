@@ -8,7 +8,7 @@ module hv_generator #(
 	input 		clk,
 	input 		rst,
 
-	input 		fin_valid, 
+	input 		fin_valid,
 	output 		fin_ready,
 	input 		[`CHANNEL_WIDTH-1:0] features [`TOTAL_NUM_CHANNEL-1:0],
 
@@ -33,7 +33,7 @@ module hv_generator #(
 	localparam 	IDLE 		= 2'b00;
 	localparam 	PROCESS_GSR = 2'b01;
 	localparam 	PROCESS_ECG = 2'b11;
-	localparam 	PROCESS_EEG = 2'b10; 
+	localparam 	PROCESS_EEG = 2'b10;
 
 	assign fin_fire = fin_valid && fin_ready;
 
@@ -46,33 +46,45 @@ module hv_generator #(
 		case (curr_state)
 			IDLE: begin
 				if (fin_fire) begin
-					curr_state		<= PROCESS_GSR;
+					curr_state 		<= PROCESS_GSR;
 
-					im				<= (projm_neg << 1) ^ (projm_neg >> 1);
+					im 				<= (projm_neg << 1) ^ (projm_neg >> 1);
 					fold_counter 	<= 0;
 					channel_counter <= 0;
 					for (i = 0; i < `TOTAL_NUM_CHANNEL; i = i + 1) feature_memory[i] <= features[i];
 				end
 			end
 
-			PROCESS_GSR: begin
+			PROCESS_GSR: begin // fold_counter is the outer counter
 				if (channel_counter == `GSR_NUM_CHANNEL) begin
+					if (fold_counter == NUM_FOLDS-1) begin
+						fold_counter 	<= 0;
+						curr_state 		<= PROCESS_ECG;
+					end else begin
+						fold_counter 	<= fold_counter + 1;
+					end
+
 					im 				<= (projm_neg << 1) ^ (projm_neg >> 1);
 					channel_counter <= 0;
-					curr_state 		<= PROCESS_ECG;
 				end else begin
-					im				<= (im << 1) ^ (im >> 1);
+					im 				<= (im << 1) ^ (im >> 1);
 					channel_counter <= channel_counter + 1;
 				end
 			end
 
 			PROCESS_ECG: begin
 				if (channel_counter == `ECG_NUM_CHANNEL) begin
+					if (fold_counter == NUM_FOLDS-1) begin
+						fold_counter 	<= 0;
+						curr_state 		<= PROCESS_EEG;
+					end else begin
+						fold_counter 	<= fold_counter + 1;
+					end
+
 					im 				<= (projm_neg << 1) ^ (projm_neg >> 1);
 					channel_counter <= 0;
-					curr_state 		<= PROCESS_EEG;
 				end else begin
-					im				<= (im << 1) ^ (im >> 1);
+					im 				<= (im << 1) ^ (im >> 1);
 					channel_counter <= channel_counter + 1;
 				end
 			end
@@ -84,13 +96,12 @@ module hv_generator #(
 						curr_state 		<= IDLE;
 					end else begin
 						fold_counter 	<= fold_counter + 1;
-						curr_state 		<= PROCESS_GSR;
 					end
 
 					im 				<= (projm_neg << 1) ^ (projm_neg >> 1);
 					channel_counter <= 0;
 				end else begin
-					im				<= (im << 1) ^ (im >> 1);
+					im 				<= (im << 1) ^ (im >> 1);
 					channel_counter <= channel_counter + 1;
 				end
 			end
@@ -129,6 +140,6 @@ module hv_generator #(
 	assign dout_valid 	= (curr_state != IDLE);
 
 	assign im_out 		= im[(fold_counter * FOLD_WIDTH) +: FOLD_WIDTH];  // syntax is im[variable starting pos +: constant width] 
-	assign projm_out 	= projm[(fold_counter * FOLD_WIDTH) +: FOLD_WIDTH];
+	assign projm_out 	= projm[(fold_counter * FOLD_WIDTH) +: FOLD_WIDTH];  
 
 endmodule : hv_generator

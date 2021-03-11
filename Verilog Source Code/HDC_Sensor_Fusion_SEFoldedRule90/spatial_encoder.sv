@@ -13,7 +13,7 @@ module spatial_encoder #(
 	input 		[FOLD_WIDTH-1:0]		im,
 	input 		[FOLD_WIDTH-1:0]		projm,
 	
-	output  							hvout_valid,
+	output 								hvout_valid,
 	input 								hvout_ready,
 	output reg 	[FOLD_WIDTH-1:0] 		hvout,
 	output reg 	[NUM_FOLDS_WIDTH-1:0]	fold_counter,
@@ -21,7 +21,7 @@ module spatial_encoder #(
 );
 
 	wire 		din_fire;
-	reg			last_hvout; 
+	reg			last_hvout;
 	wire 		[FOLD_WIDTH-1:0] 					binded_im_projm;
 	reg 		[FOLD_WIDTH-1:0] 					final_hv;
 
@@ -35,7 +35,7 @@ module spatial_encoder #(
 	localparam 	PROCESS_GSR = 2'b01;
 	localparam 	PROCESS_ECG = 2'b11;
 	localparam 	PROCESS_EEG = 2'b10;
- 
+
 	assign din_fire = din_valid && din_ready;
 
 	assign binded_im_projm = im ^ projm;
@@ -51,88 +51,106 @@ module spatial_encoder #(
 				done <= 1'b0;
 
 				if (din_fire) begin
-					curr_state		<= PROCESS_GSR;
+					curr_state 		<= PROCESS_GSR;
 
-					fold_counter 	<= 0;
+					fold_counter 	<= 0; 
 					channel_counter <= 0;
 					for (i = 0; i < FOLD_WIDTH; i = i + 1) accumulator[i] <= {{`MAX_HALF_NUM_CHANNEL_WIDTH-1{1'b0}}, binded_im_projm[i]};
 				end
 			end
 
 			PROCESS_GSR: begin
-				if (channel_counter == 0)
+				if (channel_counter == 0) 
 					final_hv <= binded_im_projm;
-				else if (channel_counter == `GSR_NUM_CHANNEL-2)
+				else if (channel_counter == `GSR_NUM_CHANNEL-2) 
 					final_hv <= final_hv ^ binded_im_projm;
 
+
 				if (channel_counter == `GSR_NUM_CHANNEL) begin  // at cycle 32, we should do the majority count for hvout
+					if (fold_counter == NUM_FOLDS-1) begin
+						fold_counter 	<= 0;
+						curr_state 		<= PROCESS_ECG;
+					end else begin
+						fold_counter 	<= fold_counter + 1;
+					end
+
 					for (i = 0; i < FOLD_WIDTH; i = i + 1) accumulator[i] <= {{`MAX_HALF_NUM_CHANNEL_WIDTH-1{1'b0}}, binded_im_projm[i]};
 					channel_counter <= 0;
-					curr_state 		<= PROCESS_ECG;
+
 				end else if (channel_counter == `GSR_NUM_CHANNEL-1) begin
 					for (i = 0; i < FOLD_WIDTH; i = i + 1) begin
 						if (accumulator[i] <= `HALF_GSR_NUM_CHANNEL) accumulator[i] <= accumulator[i] + {{`MAX_HALF_NUM_CHANNEL_WIDTH-1{1'b0}}, final_hv[i]};
 					end
 					channel_counter <= channel_counter + 1;
+
 				end else begin
 					for (i = 0; i < FOLD_WIDTH; i = i + 1) begin
 						if (accumulator[i] <= `HALF_GSR_NUM_CHANNEL) accumulator[i] <= accumulator[i] + {{`MAX_HALF_NUM_CHANNEL_WIDTH-1{1'b0}}, binded_im_projm[i]};
 					end
-					channel_counter <= channel_counter + 1;		
+					channel_counter <= channel_counter + 1;
 				end
 			end
 
 			PROCESS_ECG: begin
-				if (channel_counter == 0)
+				if (channel_counter == 0) 
 					final_hv <= binded_im_projm;
-				else if (channel_counter == `ECG_NUM_CHANNEL-2)
+				else if (channel_counter == `ECG_NUM_CHANNEL-2) 
 					final_hv <= final_hv ^ binded_im_projm;
 
-				if (channel_counter == `ECG_NUM_CHANNEL) begin  // at cycle 32, we should do the majority count for hvout
+
+				if (channel_counter == `ECG_NUM_CHANNEL) begin  // at cycle 77, we should do the majority count for hvout
+					if (fold_counter == NUM_FOLDS-1) begin
+						fold_counter 	<= 0;
+						curr_state 		<= PROCESS_EEG;
+					end else begin
+						fold_counter 	<= fold_counter + 1;
+					end
 					for (i = 0; i < FOLD_WIDTH; i = i + 1) accumulator[i] <= {{`MAX_HALF_NUM_CHANNEL_WIDTH-1{1'b0}}, binded_im_projm[i]};
 					channel_counter <= 0;
-					curr_state		<= PROCESS_EEG;
+
 				end else if (channel_counter == `ECG_NUM_CHANNEL-1) begin
 					for (i = 0; i < FOLD_WIDTH; i = i + 1) begin
 						if (accumulator[i] <= `HALF_ECG_NUM_CHANNEL) accumulator[i] <= accumulator[i] + {{`MAX_HALF_NUM_CHANNEL_WIDTH-1{1'b0}}, final_hv[i]};
 					end
 					channel_counter <= channel_counter + 1;
+
 				end else begin
 					for (i = 0; i < FOLD_WIDTH; i = i + 1) begin
 						if (accumulator[i] <= `HALF_ECG_NUM_CHANNEL) accumulator[i] <= accumulator[i] + {{`MAX_HALF_NUM_CHANNEL_WIDTH-1{1'b0}}, binded_im_projm[i]};
 					end
-					channel_counter <= channel_counter + 1;		
+					channel_counter <= channel_counter + 1;
 				end
 			end
 
 			PROCESS_EEG: begin
-				if (channel_counter == 0)
+				if (channel_counter == 0) 
 					final_hv <= binded_im_projm;
-				else if (channel_counter == `EEG_NUM_CHANNEL-2)
+				else if (channel_counter == `EEG_NUM_CHANNEL-2) 
 					final_hv <= final_hv ^ binded_im_projm;
 
-				if (channel_counter == `EEG_NUM_CHANNEL) begin  // at cycle 32, we should do the majority count for hvout
+
+				if (channel_counter == `EEG_NUM_CHANNEL) begin  // at cycle 105, we should do the majority count for hvout
 					if (fold_counter == NUM_FOLDS-1) begin
 						fold_counter 	<= 0;
-						done 			<= 1'b1;
+						done			<= 1'b1;
 						curr_state 		<= IDLE;
 					end else begin
 						fold_counter 	<= fold_counter + 1;
-						curr_state		<= PROCESS_GSR;
 					end
-					
 					for (i = 0; i < FOLD_WIDTH; i = i + 1) accumulator[i] <= {{`MAX_HALF_NUM_CHANNEL_WIDTH-1{1'b0}}, binded_im_projm[i]};
 					channel_counter <= 0;
+
 				end else if (channel_counter == `EEG_NUM_CHANNEL-1) begin
 					for (i = 0; i < FOLD_WIDTH; i = i + 1) begin
 						if (accumulator[i] <= `HALF_EEG_NUM_CHANNEL) accumulator[i] <= accumulator[i] + {{`MAX_HALF_NUM_CHANNEL_WIDTH-1{1'b0}}, final_hv[i]};
 					end
 					channel_counter <= channel_counter + 1;
+
 				end else begin
 					for (i = 0; i < FOLD_WIDTH; i = i + 1) begin
 						if (accumulator[i] <= `HALF_EEG_NUM_CHANNEL) accumulator[i] <= accumulator[i] + {{`MAX_HALF_NUM_CHANNEL_WIDTH-1{1'b0}}, binded_im_projm[i]};
 					end
-					channel_counter <= channel_counter + 1;		
+					channel_counter <= channel_counter + 1;
 				end
 			end
 
@@ -140,10 +158,10 @@ module spatial_encoder #(
 	end
 
 	assign din_ready 	= (curr_state == IDLE);
-	assign hvout_valid  = (curr_state == PROCESS_GSR && channel_counter == `GSR_NUM_CHANNEL) ||
+	assign hvout_valid 	= (curr_state == PROCESS_GSR && channel_counter == `GSR_NUM_CHANNEL) ||
 						  (curr_state == PROCESS_ECG && channel_counter == `ECG_NUM_CHANNEL) ||
 						  (curr_state == PROCESS_EEG && channel_counter == `EEG_NUM_CHANNEL);
-	
+
 	integer j;
 	always @(*) begin
 		if (curr_state == PROCESS_GSR)   // hvout section coming out depends on the fold, fuser must be aware of which fold

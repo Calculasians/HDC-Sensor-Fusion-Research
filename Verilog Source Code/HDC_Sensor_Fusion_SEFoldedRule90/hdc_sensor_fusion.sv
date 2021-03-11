@@ -1,11 +1,11 @@
 `include "const.vh"
 
 module hdc_sensor_fusion #(
-	parameter NUM_FOLDS = 8, // 1 means no folding. Equivalent to #accumulators
-	parameter NUM_FOLDS_WIDTH = `ceilLog2(8), // ceillog(NUM_FOLDS)
-	parameter FOLD_WIDTH = 250  // 2000 means no folding. FOLD_WIDTH should be a factor of 2000
+	parameter NUM_FOLDS = 1, // 1 means no folding. Equivalent to #accumulators
+	parameter NUM_FOLDS_WIDTH = `ceilLog2(1), // ceillog(NUM_FOLDS)
+	parameter FOLD_WIDTH = 2000  // 2000 means no folding. FOLD_WIDTH should be a factor of 2000
 ) (
-	input clk,  
+	input clk,
 	input rst,
 
 	input  fin_valid,
@@ -14,12 +14,12 @@ module hdc_sensor_fusion #(
 
 	output dout_valid,
 	input  dout_ready,
-	output valence, 
+	output valence,
 	output arousal
 );
 
-	//----------// 
-	// Features // 
+	//----------//
+	// Features //
 	//----------//
 
 	wire [`CHANNEL_WIDTH-1:0] features [`TOTAL_NUM_CHANNEL-1:0];

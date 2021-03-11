@@ -19,7 +19,7 @@
 `define MAX_HALF_NUM_CHANNEL_WIDTH  6
 
 `define NUM_MODALITY			3
-`define NUM_MODALITY_WIDTH		2
+`define NUM_MODALITY_WIDTH		3
 
 `define NGRAM_SIZE				3
 

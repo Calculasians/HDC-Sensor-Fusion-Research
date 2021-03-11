@@ -7,9 +7,9 @@ module hdc_sensor_fusion_tb;
 	localparam max_wait_time			= 16;
 	localparam max_wait_time_width		= `ceilLog2(max_wait_time);
 
-	localparam num_folds = 8;
-	localparam num_folds_width = `ceilLog2(num_folds);
-	localparam fold_width = 250; // 2000/2
+	//localparam num_folds = 1;
+	//localparam num_folds_width = `ceilLog2(num_folds);
+	//localparam fold_width = 2000; // 2000/100
 
 	reg clk, rst;
 
@@ -191,6 +191,12 @@ module hdc_sensor_fusion_tb;
 				$display("Starting iteration %d", i);
 			end
 
+			//@(negedge clk);
+			//if (fin_ready) begin
+			//	i = i + 1;
+			//	$display("Starting iteration %d", i);
+			//end
+
 			@(posedge clk);
 			fin_valid = 1'b0;
 
@@ -230,6 +236,14 @@ module hdc_sensor_fusion_tb;
 			repeat (wait_time) @(posedge clk);
 			dout_ready = 1'b1;
 
+			// Do this during 4.5ns HVT optimized post par, with @(posedge clk) in dout_monitor
+			// @(posedge clk); // basically posedge clk is slightly before posedge dut.AM.clk
+			// if (dout_valid) i = i + 1;
+
+			// @(posedge dut.AM.clk);
+			// dout_ready = 1'b0;
+
+			// Normal gl simulation with @(negedge clk) in dout_monitor
 			@(negedge clk);
 			if (dout_valid) i = i + 1;
 

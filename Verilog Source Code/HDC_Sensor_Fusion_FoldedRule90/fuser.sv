@@ -19,30 +19,54 @@ module fuser #(
 	output reg 	[`HV_DIMENSION-1:0] 	hvout			
 );
 
-	reg [`NUM_MODALITY_WIDTH-1:0] accumulator [`HV_DIMENSION-1:0];
+	reg [`NUM_MODALITY_WIDTH-1:0] 	accumulator [FOLD_WIDTH-1:0];
+	reg [NUM_FOLDS_WIDTH-1:0]		fold_counter_delay;
+	reg 					done_delay;
+	reg [`NUM_MODALITY_WIDTH-1:0] 	mod_counter;
 
 	assign hvin_ready 		= 1'b1;
-	assign hvout_valid 		= done;
+	assign hvout_valid 		= done_delay;
 
-	integer i;
 	always @(posedge clk) begin
-		if (rst || done) begin
-			for (i = 0; i < `HV_DIMENSION; i = i + 1) accumulator[i] <= {`NUM_MODALITY_WIDTH{1'b0}};
+		if (rst || (hvin_valid && mod_counter == 2)) begin
+			mod_counter <= 0;
 		end else if (hvin_valid) begin
-			for (i = 0; i < `HV_DIMENSION; i = i + 1) begin
-				if (i >= fold_counter * FOLD_WIDTH && i < fold_counter * FOLD_WIDTH + FOLD_WIDTH) begin
-					accumulator[i] <= accumulator[i] + {{`NUM_MODALITY_WIDTH-1{1'b0}}, hvin[i - (fold_counter * FOLD_WIDTH)]};
-				end
-			end
-
-			//for (i = fold_counter * FOLD_WIDTH; i < fold_counter * FOLD_WIDTH + FOLD_WIDTH; i = i + 1)
-			//	accumulator[i] <= accumulator[i] + {{`NUM_MODALITY_WIDTH-1{1'b0}}, hvin[i - (fold_counter * FOLD_WIDTH)]};
+			mod_counter <= mod_counter + 1;
 		end
 	end
 
-	integer j;
-	always @(*) begin
-		for (j = 0; j < `HV_DIMENSION; j = j + 1)  hvout[j] = (accumulator[j] > (`NUM_MODALITY >> 1)) ? 1'b1 : 1'b0;
+
+	integer i;
+	always @(posedge clk) begin
+		if (rst) 
+			for (i = 0; i < FOLD_WIDTH; i = i + 1) accumulator[i] <= {`NUM_MODALITY_WIDTH{1'b0}};	
+		else if (hvin_valid && mod_counter == 0)
+			for (i = 0; i < FOLD_WIDTH; i = i + 1) accumulator[i] <= {{`NUM_MODALITY_WIDTH-1{1'b0}}, hvin[i]};		
+		else if (hvin_valid) 
+			for (i = 0; i < FOLD_WIDTH; i = i + 1) accumulator[i] <= accumulator[i] + {{`NUM_MODALITY_WIDTH-1{1'b0}}, hvin[i]};
+		
+	end 
+
+	always @(posedge clk) begin
+		fold_counter_delay <= fold_counter;
+	end
+
+	always @(posedge clk) begin
+		done_delay <= done;
+	end
+
+
+	integer j; 
+	always @(posedge clk) begin
+		for (j = 0; j < `HV_DIMENSION; j = j + 1) begin
+			if (j >= fold_counter_delay * FOLD_WIDTH && j < fold_counter_delay * FOLD_WIDTH + FOLD_WIDTH) begin
+				hvout[j] <= (accumulator[j - (fold_counter_delay * FOLD_WIDTH)] > (`NUM_MODALITY >> 1)) ? 1'b1 : 1'b0;		
+			end
+		end
+
+		//for (j = fold_counter_delay * FOLD_WIDTH; j < fold_counter_delay * FOLD_WIDTH + FOLD_WIDTH; j = j + 1) begin
+		//	hvout[j] = (accumulator[j - (fold_counter_delay * FOLD_WIDTH)] > (`NUM_MODALITY >> 1)) ? 1'b1 : 1'b0;
+		//end
 	end
 
 endmodule : fuser
