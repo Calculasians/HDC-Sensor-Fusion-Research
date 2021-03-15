@@ -9,7 +9,7 @@ synthesis.inputs:
                 "src/HDC_Sensor_Fusion_FoldedRule90/spatial_encoder.sv",
                 "src/HDC_Sensor_Fusion_FoldedRule90/temporal_encoder.sv",
                 "src/HDC_Sensor_Fusion_FoldedRule90/fuser.sv",
-                "src/HDC_Sensor_Fusion_FoldedRule90/hv_binary_adder.sv",
+                "src/HDC_Sensor_Fusion_FoldedRule90/hv2000_binary_adder.sv",
                 "src/HDC_Sensor_Fusion_FoldedRule90/hv_generator.sv"
                ]
   top_module: "hdc_sensor_fusion"

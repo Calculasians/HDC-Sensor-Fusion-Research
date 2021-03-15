@@ -1,8 +1,9 @@
 `include "const.vh"
 
 module hdc_sensor_fusion #(
-	parameter NUM_FOLDS = 8,
-	parameter AM_NUM_FOLDS = 400
+	parameter NUM_FOLDS = 8, // 1 means no folding. Equivalent to #accumulators
+	parameter NUM_FOLDS_WIDTH = `ceilLog2(8), // ceillog(NUM_FOLDS)
+	parameter FOLD_WIDTH = 250  // 2000 means no folding. FOLD_WIDTH should be a factor of 2000
 ) (
 	input clk,  
 	input rst,
@@ -16,16 +17,6 @@ module hdc_sensor_fusion #(
 	output valence, 
 	output arousal
 );
-
-	//-----------// 
-	// Constants // 
-	//-----------//
-
-	localparam NUM_FOLDS_WIDTH		= `ceilLog2(NUM_FOLDS);
-	localparam FOLD_WIDTH			= 2000 / NUM_FOLDS;
-
-	localparam AM_NUM_FOLDS_WIDTH	= `ceilLog2(AM_NUM_FOLDS);
-	localparam AM_FOLD_WIDTH 		= 2000 / AM_NUM_FOLDS;
 
 	//----------// 
 	// Features // 
@@ -77,10 +68,10 @@ module hdc_sensor_fusion #(
 	//---------//
 
 	hv_generator #(
-		.NUM_FOLDS          (NUM_FOLDS),
-		.NUM_FOLDS_WIDTH    (NUM_FOLDS_WIDTH),
-		.FOLD_WIDTH         (FOLD_WIDTH)
-    ) HV_GEN (
+            .NUM_FOLDS          (NUM_FOLDS),
+            .NUM_FOLDS_WIDTH    (NUM_FOLDS_WIDTH),
+            .FOLD_WIDTH                 (FOLD_WIDTH)
+        ) HV_GEN (
 		.clk			(clk),
 		.rst			(rst),
 
@@ -95,10 +86,10 @@ module hdc_sensor_fusion #(
 	);
 
 	spatial_encoder #(
-		.NUM_FOLDS          (NUM_FOLDS),
-		.NUM_FOLDS_WIDTH    (NUM_FOLDS_WIDTH),
-		.FOLD_WIDTH			(FOLD_WIDTH)
-	) SE (
+            .NUM_FOLDS          (NUM_FOLDS),
+            .NUM_FOLDS_WIDTH    (NUM_FOLDS_WIDTH),
+            .FOLD_WIDTH                 (FOLD_WIDTH)
+        ) SE (
 		.clk			(clk),
 		.rst			(rst),
 
@@ -115,10 +106,10 @@ module hdc_sensor_fusion #(
 	);
    	
 	fuser #(
-		.NUM_FOLDS          (NUM_FOLDS),
-		.NUM_FOLDS_WIDTH    (NUM_FOLDS_WIDTH),
-		.FOLD_WIDTH         (FOLD_WIDTH)
-	) FUSER (
+            .NUM_FOLDS          (NUM_FOLDS),
+            .NUM_FOLDS_WIDTH    (NUM_FOLDS_WIDTH),
+            .FOLD_WIDTH                 (FOLD_WIDTH)
+        ) FUSER (
 		.clk			(clk),
 		.rst			(rst),
 
@@ -146,11 +137,7 @@ module hdc_sensor_fusion #(
 		.hvout			(te_hvout)
 	);
 
-	associative_memory #(
-		.AM_NUM_FOLDS          (AM_NUM_FOLDS),
-		.AM_NUM_FOLDS_WIDTH    (AM_NUM_FOLDS_WIDTH),
-		.AM_FOLD_WIDTH         (AM_FOLD_WIDTH)
-	) AM (
+	associative_memory AM (
 		.clk			(clk),
 		.rst			(rst),
 

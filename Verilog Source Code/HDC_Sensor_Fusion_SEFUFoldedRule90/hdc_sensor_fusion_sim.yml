@@ -7,7 +7,7 @@ sim.inputs.input_files:
    - "src/HDC_Sensor_Fusion_FoldedRule90/hdc_sensor_fusion.sv"
    - "src/HDC_Sensor_Fusion_FoldedRule90/hdc_sensor_fusion_tb.sv"
    - "src/HDC_Sensor_Fusion_FoldedRule90/associative_memory.sv"
-   - "src/HDC_Sensor_Fusion_FoldedRule90/hv_binary_adder.sv"
+   - "src/HDC_Sensor_Fusion_FoldedRule90/hv2000_binary_adder.sv"
    - "src/HDC_Sensor_Fusion_FoldedRule90/fuser.sv"
    - "src/HDC_Sensor_Fusion_FoldedRule90/spatial_encoder.sv"
    - "src/HDC_Sensor_Fusion_FoldedRule90/temporal_encoder.sv"

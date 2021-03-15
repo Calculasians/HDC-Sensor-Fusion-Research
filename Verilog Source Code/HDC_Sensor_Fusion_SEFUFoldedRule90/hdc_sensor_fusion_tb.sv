@@ -1,6 +1,5 @@
 `timescale 1ns / 1ps
 `include "const.vh"
-`define GL_SIM 1 // keep if doing gate-level simulation
 
 module hdc_sensor_fusion_tb;
 
@@ -8,9 +7,9 @@ module hdc_sensor_fusion_tb;
 	localparam max_wait_time			= 16;
 	localparam max_wait_time_width		= `ceilLog2(max_wait_time);
 
-	// Should be a factor of 2000 (or `HV_DIMENSION)
-	localparam num_folds 	= 8;
-	localparam am_num_folds = 400;
+	localparam num_folds = 8;
+	localparam num_folds_width = `ceilLog2(num_folds);
+	localparam fold_width = 250; // 2000/2
 
 	reg clk, rst;
 
@@ -27,15 +26,12 @@ module hdc_sensor_fusion_tb;
 	wire valence;
 	wire arousal;
 
-	hdc_sensor_fusion
-	`ifndef GL_SIM
-	   #(	
-            .NUM_FOLDS          (num_folds),
-			.AM_NUM_FOLDS		(am_num_folds)
-        ) dut (
-	`else
-		dut (
-	`endif
+	hdc_sensor_fusion //#(	
+            //.NUM_FOLDS          (num_folds),
+            //.NUM_FOLDS_WIDTH   	(num_folds_width),
+            //.FOLD_WIDTH   		(fold_width)
+        //) dut (
+	dut (
 		.clk				(clk),
 		.rst				(rst),
 
@@ -187,9 +183,8 @@ module hdc_sensor_fusion_tb;
 			fin_valid = 1'b1;
 			features_top = feature_memory[i];
 
-			`ifdef GL_SIM
+			// use this when running sim-par at very high frequencies
 			@(negedge clk);
-			`endif
 			if (fin_ready) begin
 				@(posedge clk);
 				i = i + 1;
@@ -209,11 +204,8 @@ module hdc_sensor_fusion_tb;
 
 		while (i < num_entry) begin
 
-			`ifdef GL_SIM
 			@(negedge clk);
-			`else
-			@(posedge clk);
-			`endif
+			//@(posedge clk);
 
 			if (fin_valid && ~fin_ready) fin_valid_high_ready_low = fin_valid_high_ready_low + 1;
 			if (~fin_valid && fin_ready) fin_valid_low_ready_high = fin_valid_low_ready_high + 1;
@@ -238,9 +230,7 @@ module hdc_sensor_fusion_tb;
 			repeat (wait_time) @(posedge clk);
 			dout_ready = 1'b1;
 
-			`ifdef GL_SIM
 			@(negedge clk);
-			`endif
 			if (dout_valid) i = i + 1;
 
 			@(posedge clk);
@@ -256,11 +246,8 @@ module hdc_sensor_fusion_tb;
 
 		while (i < num_entry) begin
 
-			`ifdef GL_SIM
 			@(negedge clk);
-			`else
-			@(posedge clk);
-			`endif
+			//@(posedge clk);
 
 			if (dout_valid && ~dout_ready) dout_valid_high_ready_low = dout_valid_high_ready_low + 1;
 			if (~dout_valid && dout_ready) dout_valid_low_ready_high = dout_valid_low_ready_high + 1;
