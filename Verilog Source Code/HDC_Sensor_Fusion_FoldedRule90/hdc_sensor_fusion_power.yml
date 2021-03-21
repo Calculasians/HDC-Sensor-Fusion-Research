@@ -1,9 +1,0 @@
-power.inputs.waveforms_meta: "append"
-power.inputs.waveforms:
-   - "/tools/B/daniels/hammer-tsmc28/build/sim-par-rundir/vcdplus.vpd"
-
-power.inputs.database: "/tools/B/daniels/hammer-tsmc28/build/par-rundir/latest"
-
-power.inputs.saifs_meta: "append"
-power.inputs.saifs:
-   - "/tools/B/daniels/hammer-tsmc28/build/sim-par-rundir/hdc_sensor_fusion.saif"
