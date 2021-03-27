@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 `include "const.vh"
-`define GL_SIM 1 // keep if doing gate-level simulation
+//`define GL_SIM 1 // keep if doing gate-level simulation
 
 module hdc_sensor_fusion_tb;
 
@@ -9,7 +9,7 @@ module hdc_sensor_fusion_tb;
 	localparam max_wait_time_width		= `ceilLog2(max_wait_time);
 
 	// Should be a factor of 2000 (or `HV_DIMENSION)
-	localparam num_folds 	= 100;
+	localparam num_folds 	= 20;
 
 	reg clk, rst;
 
@@ -52,6 +52,8 @@ module hdc_sensor_fusion_tb;
 	//-------//
 
 	integer feature_file;
+	string  expected_v_filename;
+	string  expected_a_filename;
 	integer expected_v_file;
 	integer expected_a_file;
 
@@ -144,8 +146,10 @@ module hdc_sensor_fusion_tb;
 		integer i, j;
 
 		feature_file	= $fopen("../../src/HDC_Sensor_Fusion_FoldedRule90/feature_binary.txt","r");
-		expected_v_file	= $fopen("../../src/HDC_Sensor_Fusion_FoldedRule90/expected_v.txt","r");
-		expected_a_file	= $fopen("../../src/HDC_Sensor_Fusion_FoldedRule90/expected_a.txt","r");
+		$sformat(expected_v_filename, "../../src/HDC_Sensor_Fusion_FoldedRule90/expected_v_%0dfolds.txt", num_folds);
+		$sformat(expected_a_filename, "../../src/HDC_Sensor_Fusion_FoldedRule90/expected_a_%0dfolds.txt", num_folds);
+		expected_v_file	= $fopen(expected_v_filename,"r");
+		expected_a_file	= $fopen(expected_a_filename,"r");
 
 		if (feature_file == 0 || expected_v_file == 0 || expected_a_file == 0) begin
 			$display("Data Fetch Error");

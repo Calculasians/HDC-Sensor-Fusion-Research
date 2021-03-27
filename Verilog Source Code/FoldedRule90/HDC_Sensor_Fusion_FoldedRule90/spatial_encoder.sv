@@ -50,7 +50,7 @@ module spatial_encoder #(
 		end
 
 		case (curr_state)
-			IDLE: begin
+			IDLE: begin 
 				done 		<= 1'b0;
 				send_to_am 	<= 1'b0;
 

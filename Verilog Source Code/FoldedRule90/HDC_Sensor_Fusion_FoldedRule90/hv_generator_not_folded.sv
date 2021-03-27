@@ -28,7 +28,7 @@ module hv_generator #(
 	reg			[1:0]							classification_counter;
 	reg 		[NUM_FOLDS_WIDTH-1:0]			fold_counter;
 	reg 		[`MAX_NUM_CHANNEL_WIDTH-1:0] 	channel_counter;
-	reg			[FOLD_WIDTH-1:0] 				im;
+	reg			[`HV_DIMENSION-1:0] 			im;
 	reg 		[`HV_DIMENSION-1:0] 			projm;
 
 	reg			[1:0] 							curr_state;
@@ -44,10 +44,7 @@ module hv_generator #(
 	integer j;
 	always @(posedge clk) begin
 		if (rst) begin
-			curr_state 				<= IDLE;
-			classification_counter	<= 0;
-			fold_counter 			<= NUM_FOLDS-1;
-			channel_counter			<= 0;
+			curr_state <= IDLE;
 		end
 
 		case (curr_state)
@@ -55,8 +52,7 @@ module hv_generator #(
 				if (fin_fire) begin
 					curr_state				<= PROCESS_GSR;
 
-					// syntax is im[variable starting pos +: constant width] 
-					im						<= (projm_neg[((NUM_FOLDS-1) * FOLD_WIDTH) +: FOLD_WIDTH] << 1) ^ (projm_neg[((NUM_FOLDS-1) * FOLD_WIDTH) +: FOLD_WIDTH] >> 1);
+					im						<= (projm_neg << 1) ^ (projm_neg >> 1);
 					classification_counter	<= 0;
 					fold_counter 			<= NUM_FOLDS-1;
 					channel_counter 		<= 0;
@@ -70,7 +66,7 @@ module hv_generator #(
 
 			PROCESS_GSR: begin
 				if (channel_counter == `GSR_NUM_CHANNEL) begin
-					im 				<= (projm_neg[(fold_counter * FOLD_WIDTH) +: FOLD_WIDTH] << 1) ^ (projm_neg[(fold_counter * FOLD_WIDTH) +: FOLD_WIDTH] >> 1);
+					im 				<= (projm_neg << 1) ^ (projm_neg >> 1);
 					channel_counter <= 0;
 					curr_state 		<= PROCESS_ECG;
 				end else begin
@@ -81,7 +77,7 @@ module hv_generator #(
 
 			PROCESS_ECG: begin
 				if (channel_counter == `ECG_NUM_CHANNEL) begin
-					im 				<= (projm_neg[(fold_counter * FOLD_WIDTH) +: FOLD_WIDTH] << 1) ^ (projm_neg[(fold_counter * FOLD_WIDTH) +: FOLD_WIDTH] >> 1);
+					im 				<= (projm_neg << 1) ^ (projm_neg >> 1);
 					channel_counter <= 0;
 					curr_state 		<= PROCESS_EEG;
 				end else begin
@@ -96,19 +92,17 @@ module hv_generator #(
 						classification_counter 	<= 0;
 						fold_counter 			<= NUM_FOLDS-1;
 						curr_state 				<= IDLE;
-						im 						<= (projm_neg[((NUM_FOLDS-1) * FOLD_WIDTH) +: FOLD_WIDTH] << 1) ^ (projm_neg[((NUM_FOLDS-1) * FOLD_WIDTH) +: FOLD_WIDTH] >> 1);
 					end else begin
 						curr_state 				<= PROCESS_GSR;
 						if (classification_counter == 2) begin
 							classification_counter 	<= 0;
 							fold_counter 			<= fold_counter - 1;
-							im 						<= (projm_neg[((fold_counter-1) * FOLD_WIDTH) +: FOLD_WIDTH] << 1) ^ (projm_neg[((fold_counter-1) * FOLD_WIDTH) +: FOLD_WIDTH] >> 1);
 						end else begin
 							classification_counter 	<= classification_counter + 1;
-							im 						<= (projm_neg[(fold_counter * FOLD_WIDTH) +: FOLD_WIDTH] << 1) ^ (projm_neg[(fold_counter * FOLD_WIDTH) +: FOLD_WIDTH] >> 1);
 						end
 					end
 
+					im 				<= (projm_neg << 1) ^ (projm_neg >> 1);
 					channel_counter <= 0;
 				end else begin
 					im				<= (im << 1) ^ (im >> 1);
@@ -149,7 +143,7 @@ module hv_generator #(
 	assign fin_ready 	= (curr_state == IDLE);
 	assign dout_valid 	= (curr_state != IDLE);
 
-	assign im_out 		= im; 
+	assign im_out 		= im[(fold_counter * FOLD_WIDTH) +: FOLD_WIDTH];  // syntax is im[variable starting pos +: constant width] 
 	assign projm_out 	= projm[(fold_counter * FOLD_WIDTH) +: FOLD_WIDTH];
 
 endmodule : hv_generator
