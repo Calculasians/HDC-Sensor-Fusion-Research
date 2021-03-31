@@ -3,7 +3,7 @@ sim.inputs.tb_name: "hdc_sensor_fusion_tb"
 sim.inputs.input_files_meta: "append"
 sim.inputs.input_files:
     - "src/../build/syn-rundir/hdc_sensor_fusion.mapped.v"
-    - "src/HDC_Sensor_Fusion_FoldedRule90/hdc_sensor_fusion_tb.sv"
+    - "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/hdc_sensor_fusion_tb.sv"
 
 sim.inputs.level: "gl"
 
@@ -15,7 +15,7 @@ sim.inputs:
     - "-line"
     - "+v2k"
     - "+lint=all,noVCDE"
-    - "+incdir+../../src/HDC_Sensor_Fusion_FoldedRule90"
+    - "+incdir+../../src/HDC_Sensor_Fusion_SEFUAMFoldedRule90"
     - "+define+CLOCK_PERIOD=46"
     - "-sverilog"
     - "-debug_access+all"

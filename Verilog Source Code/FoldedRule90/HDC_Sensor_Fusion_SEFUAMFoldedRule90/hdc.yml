@@ -4,13 +4,13 @@ vlsi.core.max_threads: 24
 # File inputs
 synthesis.inputs:
   input_files: [
-                "src/HDC_Sensor_Fusion_FoldedRule90/hdc_sensor_fusion.sv",
-                "src/HDC_Sensor_Fusion_FoldedRule90/associative_memory.sv",
-                "src/HDC_Sensor_Fusion_FoldedRule90/spatial_encoder.sv",
-                "src/HDC_Sensor_Fusion_FoldedRule90/temporal_encoder.sv",
-                "src/HDC_Sensor_Fusion_FoldedRule90/fuser.sv",
-                "src/HDC_Sensor_Fusion_FoldedRule90/hv_binary_adder.sv",
-                "src/HDC_Sensor_Fusion_FoldedRule90/hv_generator.sv"
+                "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/hdc_sensor_fusion.sv",
+                "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/associative_memory.sv",
+                "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/spatial_encoder.sv",
+                "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/temporal_encoder.sv",
+                "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/fuser.sv",
+                "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/hv_binary_adder.sv",
+                "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/hv_generator.sv"
                ]
   top_module: "hdc_sensor_fusion"
  

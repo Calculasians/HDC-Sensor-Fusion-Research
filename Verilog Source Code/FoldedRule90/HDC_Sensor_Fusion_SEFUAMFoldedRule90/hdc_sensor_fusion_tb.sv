@@ -54,6 +54,8 @@ module hdc_sensor_fusion_tb;
 	//-------//
 
 	integer feature_file;
+	string  expected_v_filename;
+	string  expected_a_filename;
 	integer expected_v_file;
 	integer expected_a_file;
 
@@ -143,9 +145,11 @@ module hdc_sensor_fusion_tb;
 	function void initialize_memory();
 		integer i, j;
 
-		feature_file	= $fopen("../../src/HDC_Sensor_Fusion_FoldedRule90/feature_binary.txt","r");
-		expected_v_file	= $fopen("../../src/HDC_Sensor_Fusion_FoldedRule90/expected_v.txt","r");
-		expected_a_file	= $fopen("../../src/HDC_Sensor_Fusion_FoldedRule90/expected_a.txt","r");
+		feature_file	= $fopen("../../src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/feature_binary.txt","r");
+		$sformat(expected_v_filename, "../../src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/expected_v_%0dfolds.txt", num_folds);
+		$sformat(expected_a_filename, "../../src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/expected_a_%0dfolds.txt", num_folds);
+		expected_v_file	= $fopen(expected_v_filename,"r");
+		expected_a_file	= $fopen(expected_a_filename,"r");
 
 		if (feature_file == 0 || expected_v_file == 0 || expected_a_file == 0) begin
 			$display("Data Fetch Error");
@@ -268,13 +272,13 @@ module hdc_sensor_fusion_tb;
 			if (dout_valid && dout_ready) begin
 				end_time[i] = cycle;
 
-				if (valence != expected_v_memory[i]) begin
+				if (valence != expected_v_memory[i] && i > 1) begin
 					$display("Output %d does not match the expected VALENCE label", i);
 					$display("Label %d: \n%b,\nExpected Label: \n%b\n", i, valence, expected_v_memory[i]);
 					num_fail = num_fail + 1;
 				end
 
-				if (arousal != expected_a_memory[i]) begin
+				if (arousal != expected_a_memory[i] && i > 1) begin
 					$display("Output %d does not match the expected AROUSAL label", i);
 					$display("Label %d: \n%b,\nExpected Label: \n%b\n", i, arousal, expected_a_memory[i]);
 					num_fail = num_fail + 1;
