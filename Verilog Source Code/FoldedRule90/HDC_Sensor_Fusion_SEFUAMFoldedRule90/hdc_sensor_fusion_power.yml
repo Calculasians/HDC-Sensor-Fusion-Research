@@ -1,9 +1,13 @@
 power.inputs.waveforms_meta: "append"
 power.inputs.waveforms:
-   - "/tools/B/daniels/hammer-tsmc28/build/sim-par-rundir/vcdplus.vpd"
+   - "/tools/B/daniels/hammer-tsmc28/build/sim-par-rundir/hdc_sensor_fusion.vcd"
 
 power.inputs.database: "/tools/B/daniels/hammer-tsmc28/build/par-rundir/latest"
+power.inputs.tb_name: "hdc_sensor_fusion_tb"
 
 power.inputs.saifs_meta: "append"
 power.inputs.saifs:
    - "/tools/B/daniels/hammer-tsmc28/build/sim-par-rundir/hdc_sensor_fusion.saif"
+
+power.inputs.start_times: ["0"]
+power.inputs.end_times: ["18300"]

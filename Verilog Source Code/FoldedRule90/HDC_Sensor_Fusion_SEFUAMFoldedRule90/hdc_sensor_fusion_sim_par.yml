@@ -16,7 +16,7 @@ sim.inputs:
     - "+v2k"
     - "+lint=all,noVCDE"
     - "+incdir+../../src/HDC_Sensor_Fusion_SEFUAMFoldedRule90"
-    - "+define+CLOCK_PERIOD=550"
+    - "+define+CLOCK_PERIOD=5"
     - "-sverilog"
     - "-debug_acc+pp"
     - "-debug_acc+all"

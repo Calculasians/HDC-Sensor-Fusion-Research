@@ -1,11 +1,11 @@
 `include "const.vh"
 
 module hdc_sensor_fusion #(
-	parameter NUM_FOLDS = 8,
-	parameter AM_NUM_FOLDS = 400
+	parameter NUM_FOLDS = 1,
+	parameter AM_NUM_FOLDS = 50
 ) (
 	input clk,  
-	input rst,
+	input rst,   
 
 	input  fin_valid,
 	output fin_ready,
@@ -15,7 +15,7 @@ module hdc_sensor_fusion #(
 	input  dout_ready,
 	output valence, 
 	output arousal
-);
+); 
 
 	//-----------// 
 	// Constants // 

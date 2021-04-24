@@ -1,19 +1,20 @@
 `timescale 1ns / 1ps
 `include "const.vh"
 `define GL_SIM 1 // keep if doing gate-level simulation
+//`define FIN_USE_1MS_TARGET // keep if asserting fin_fire only at every 1ms. Comment out if you want to assert fin_fire at random intervals maxed by max_wait_time
 
 module hdc_sensor_fusion_tb;
-
+ 
 	localparam num_entry				= 20;
-	localparam max_wait_time			= 16;
+	localparam max_wait_time			= 0;  // set to 0 to not wait between classifications
 	localparam max_wait_time_width		= `ceilLog2(max_wait_time);
 
 	// Should be a factor of 2000 (or `HV_DIMENSION)
-	localparam num_folds 	= 8;
-	localparam am_num_folds = 400;
+	localparam num_folds 	= 1;
+	localparam am_num_folds = 50;
 
 	reg clk, rst;
-
+ 
 	initial clk = 0;
 	initial rst = 0;
 	always #(`CLOCK_PERIOD/2) clk = ~clk;
@@ -52,6 +53,8 @@ module hdc_sensor_fusion_tb;
 	//-------//
 	// Files //
 	//-------//
+	
+	integer power_yml_file;
 
 	integer feature_file;
 	string  expected_v_filename;
@@ -92,6 +95,8 @@ module hdc_sensor_fusion_tb;
 
 	initial begin
 		$vcdpluson;
+		$dumpfile("hdc_sensor_fusion.vcd");
+		$dumpvars(1, hdc_sensor_fusion_tb.dut);
 		$set_toggle_region(dut);
 		$toggle_start();
 
@@ -136,6 +141,9 @@ module hdc_sensor_fusion_tb;
 		else
 			$display("%d entries does not matched\n\n!", num_fail);
 
+		$display("Simulation ended at time : %0d ns\n", $time);
+		write_power_yml_file();
+
 		$toggle_stop();
 		$toggle_report("../../build/sim-par-rundir/hdc_sensor_fusion.saif", 1.0e-9, dut);
 		$vcdplusoff;
@@ -167,6 +175,21 @@ module hdc_sensor_fusion_tb;
 
 	endfunction : initialize_memory
 
+	function void write_power_yml_file();
+		power_yml_file = $fopen("../../src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/hdc_sensor_fusion_power.yml","w");
+		$fwrite(power_yml_file, "power.inputs.waveforms_meta: \"append\"\n");
+		$fwrite(power_yml_file, "power.inputs.waveforms:\n");
+		$fwrite(power_yml_file, "   - \"/tools/B/daniels/hammer-tsmc28/build/sim-par-rundir/hdc_sensor_fusion.vcd\"\n\n");
+		$fwrite(power_yml_file, "power.inputs.database: \"/tools/B/daniels/hammer-tsmc28/build/par-rundir/latest\"\n");
+		$fwrite(power_yml_file, "power.inputs.tb_name: \"hdc_sensor_fusion_tb\"\n\n");
+		$fwrite(power_yml_file, "power.inputs.saifs_meta: \"append\"\n");
+		$fwrite(power_yml_file, "power.inputs.saifs:\n");
+		$fwrite(power_yml_file, "   - \"/tools/B/daniels/hammer-tsmc28/build/sim-par-rundir/hdc_sensor_fusion.saif\"\n\n");
+		$fwrite(power_yml_file, "power.inputs.start_times: [\"0\"]\n");
+		$fwrite(power_yml_file, "power.inputs.end_times: [\"%0d\"]\n", $time); 
+		$fclose(power_yml_file);
+	endfunction : write_power_yml_file
+
 	task start_cycle_counter;
 		while (done == 0) begin
 			@(negedge clk)
@@ -178,16 +201,27 @@ module hdc_sensor_fusion_tb;
 
 		integer i = 0;
 
+		`ifndef FIN_USE_1MS_TARGET
 		reg [1:0] do_wait; // do_wait < 2 == wait, else do not wait
 		reg [max_wait_time_width-1:0] wait_time;
+		`else
+		integer wait_time = $floor(1000000 / `CLOCK_PERIOD); // 1000000ns = 1ms
+		`endif
 
 		while (i < num_entry) begin
 
+			`ifndef FIN_USE_1MS_TARGET
 			do_wait = $random() % 4;
 			if (do_wait < 2) begin
 				wait_time = $random() % max_wait_time;
 				repeat (wait_time) @(posedge clk);
 			end
+			`else
+			if (i != 0) begin
+				repeat (wait_time) @(posedge clk);
+			end
+			`endif
+
 			fin_valid = 1'b1;
 			features_top = feature_memory[i];
 
