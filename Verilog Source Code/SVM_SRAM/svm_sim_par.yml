@@ -3,7 +3,7 @@ sim.inputs.tb_name: "SVM_tb"
 sim.inputs.input_files_meta: "append"
 sim.inputs.input_files:
     - "src/../build/par-rundir/SVM.sim.v"
-    - "src/SVM/SVM_tb.sv"
+    - "src/SVM_SRAM/SVM_tb.sv"
 
 sim.inputs.level: "gl"
 
@@ -16,7 +16,7 @@ sim.inputs:
     - "+v2k"
     - "+lint=all,noVCDE"
     - "+incdir+../../src/SVM"
-    - "+define+CLOCK_PERIOD=10"
+    - "+define+CLOCK_PERIOD=50"
     - "-sverilog"
     - "-debug_acc+pp"
     - "-debug_acc+all"

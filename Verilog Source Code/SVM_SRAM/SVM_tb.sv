@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 `include "const.vh"
-`define GL_SIM 1 // keep if doing gate-level simulation. technically can always leave it uncommented
+`define GL_SIM 1
 
 module SVM_tb;
 
@@ -20,19 +20,29 @@ module SVM_tb;
     localparam SUP_WIDTH        = (ASUP_WIDTH > VSUP_WIDTH) ? ASUP_WIDTH : VSUP_WIDTH;
     localparam LOG_SUP_WIDTH    = (LOG_ASUP_WIDTH > LOG_VSUP_WIDTH) ? LOG_ASUP_WIDTH : LOG_VSUP_WIDTH;
 
-	localparam V_NPARALLEL		= 1;
-	localparam A_NPARALLEL 		= 1;
+	localparam V_NPARALLEL		= 120;
+	localparam A_NPARALLEL 		= 155;
 
     reg clk, rst;
 	initial clk = 0;
 	initial rst = 0;
 	always #(`CLOCK_PERIOD/2) clk = ~clk;
 
-    reg signed [NBITS*F_WIDTH-1:0]					in_features;
-    reg signed [NBITS*SUP_WIDTH*F_WIDTH-1:0]		in_support;
-    reg signed [NBITS*SUP_WIDTH-1:0]				in_alpha;
-    reg signed [2*NBITS+LOG_SUP_WIDTH-1:0] 			in_intercept;
+	reg signed [NBITS*VSUP_WIDTH-1:0]				v_in_support;
+	reg signed [NBITS-1:0] 							v_in_alpha;
+	reg signed [2*NBITS+LOG_SUP_WIDTH-1:0]			v_in_intercept;
 
+	reg signed [NBITS*ASUP_WIDTH-1:0]				a_in_support;
+	reg signed [NBITS-1:0] 							a_in_alpha;
+	reg signed [2*NBITS+LOG_SUP_WIDTH-1:0]			a_in_intercept;
+
+	reg [7:0] mem_write_addr;
+	reg mem_we;  // active low!
+	wire mem_write_ready;
+	reg mem_write_done;
+	reg intercept_valid;
+
+    reg signed [NBITS*F_WIDTH-1:0]					in_features;
     reg fin_valid;
     wire fin_ready;
 
@@ -63,19 +73,29 @@ module SVM_tb;
         .clk            (clk),
         .rst            (rst),
 
-        .in_features	(in_features),
-        .in_support		(in_support),
-        .in_alpha		(in_alpha),
-        .in_intercept	(in_intercept),
+		.v_in_support		(v_in_support),
+		.v_in_alpha 		(v_in_alpha),
+		.v_in_intercept		(v_in_intercept),
 
-        .fin_valid      (fin_valid),
-        .fin_ready      (fin_ready),
+		.a_in_support		(a_in_support),
+		.a_in_alpha 		(a_in_alpha),
+		.a_in_intercept		(a_in_intercept),
+
+		.mem_write_addr		(mem_write_addr),
+		.mem_we				(mem_we),
+		.mem_write_ready 	(mem_write_ready),
+		.mem_write_done 	(mem_write_done),
+		.intercept_valid 	(intercept_valid),
+
+        .in_features		(in_features),
+        .fin_valid      	(fin_valid),
+        .fin_ready      	(fin_ready),
         
-        .valence        (valence),
-        .arousal        (arousal),
+        .valence        	(valence),
+        .arousal        	(arousal),
         
-        .dout_valid     (dout_valid),
-        .dout_ready     (dout_ready)
+        .dout_valid     	(dout_valid),
+        .dout_ready     	(dout_ready)
     );
 
 	string v_feature_filename, v_support_filename, v_alpha_filename, v_intercept_filename;
@@ -122,14 +142,19 @@ module SVM_tb;
 		initialize_memory();
 
 		@(posedge clk);
-		fin_valid  = 1'b0;
-		dout_ready = 1'b1;
+		fin_valid  		= 1'b0;
+		dout_ready 		= 1'b1;
+		mem_we = 1'b1;
+		mem_write_done 	= 1'b0;
+		intercept_valid = 1'b0;
 
 		repeat (2) @(posedge clk);
 		rst = 1'b1;
 		repeat (5) @(posedge clk);
 		rst = 1'b0;
 		repeat (2) @(posedge clk);
+
+		write_mem();
 
 		fork
 			start_fin_sequence();
@@ -254,6 +279,52 @@ module SVM_tb;
 		end
 	endtask : start_cycle_counter
 
+	task write_mem;
+		integer i = 0;
+		integer j;
+
+		while (~mem_write_ready) begin
+			@(negedge clk);
+		end
+
+		@(posedge clk);
+		intercept_valid 	= 1'b1;
+		v_in_intercept		= v_intercept_memory;
+		a_in_intercept 		= a_intercept_memory;
+
+		@(posedge clk);
+		intercept_valid 	= 1'b0;
+		mem_we 	= 1'b0;
+		while (i < F_WIDTH) begin
+			mem_write_addr 	= i;
+
+			v_in_alpha		= v_alpha_memory[i];
+			a_in_alpha 		= a_alpha_memory[i];
+
+			for (j = 0; j < VSUP_WIDTH; j = j + 1) begin
+				v_in_support[(j*NBITS) +: NBITS]	= v_support_memory[j][i];
+			end
+
+			for (j = 0; j < ASUP_WIDTH; j = j + 1) begin
+				a_in_support[(j*NBITS) +: NBITS]	= a_support_memory[j][i];
+			end
+
+			@(posedge clk);
+			i = i + 1;
+		end
+
+		@(posedge clk);
+
+		mem_we 	= 1'b1;
+		mem_write_done 		= 1'b1;
+		
+		@(posedge clk);
+		mem_write_done 		= 1'b0;
+
+		@(posedge clk);
+
+	endtask : write_mem
+
 	task start_fin_sequence;
 
 		integer i = 0;
@@ -264,44 +335,16 @@ module SVM_tb;
 			fin_valid       = 1'b1;
 
 			if (modality == 0) begin  // valence
-
 				for (j = 0; j < F_WIDTH; j = j + 1) begin
 					in_features[j*NBITS +: NBITS]	= v_feature_memory[i][j];
 				end
-
-				for (j = 0; j < VSUP_WIDTH; j = j + 1) begin
-					for (k = 0; k < F_WIDTH; k = k + 1) begin
-						in_support[(j*F_WIDTH*NBITS)+k*NBITS +: NBITS] = v_support_memory[j][k];
-					end
-				end
-
-				for (j = 0; j < VSUP_WIDTH; j = j + 1) begin
-					in_alpha[j*NBITS +: NBITS]    = v_alpha_memory[j];
-				end
-				in_intercept  = v_intercept_memory;
-
 			end else begin  // arousal
-
 				for (j = 0; j < F_WIDTH; j = j + 1) begin
 					in_features[j*NBITS +: NBITS]	= a_feature_memory[i][j];
 				end
-
-				for (j = 0; j < ASUP_WIDTH; j = j + 1) begin
-					for (k = 0; k < F_WIDTH; k = k + 1) begin
-						in_support[(j*F_WIDTH*NBITS)+k*NBITS +: NBITS] = a_support_memory[j][k];
-					end
-				end
-
-				for (j = 0; j < ASUP_WIDTH; j = j + 1) begin
-					in_alpha[j*NBITS +: NBITS]    = a_alpha_memory[j];
-				end
-				in_intercept  = a_intercept_memory;
-
 			end
 
-            `ifdef GL_SIM
 			@(negedge clk);
-            `endif
 			if (fin_ready) begin
 				@(posedge clk);
 				if (modality == 0) begin
@@ -325,11 +368,7 @@ module SVM_tb;
 		integer i = 0;
 		while (i < num_entry) begin
 
-			`ifdef GL_SIM
 			@(negedge clk);
-			`else
-			@(posedge clk);
-			`endif
 
 			if (fin_valid && fin_ready && modality == 0) begin
 				start_time[i] = cycle;
@@ -345,11 +384,7 @@ module SVM_tb;
 		integer i = 0;
 		while (i < num_entry) begin
 
-			`ifdef GL_SIM
 			@(negedge clk);
-			`else
-			@(posedge clk);
-			`endif
 
 			if (dout_valid && dout_ready) begin
 				end_time[i] = cycle;

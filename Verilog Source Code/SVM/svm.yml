@@ -19,7 +19,7 @@ vlsi.inputs.power_spec_type: "cpf"
 
 # Specify clock signals
 vlsi.inputs.clocks: [
-  {name: "clk", period: "1700ns", uncertainty: "0.1ns"}
+  {name: "clk", period: "10ns", uncertainty: "0.1ns"}
 ]
 
 vlsi.inputs.custom_sdc_constraints: [
@@ -60,8 +60,8 @@ vlsi.inputs.placement_constraints:
     type: toplevel
     x: 0
     y: 0
-    width: 400 
-    height: 250
+    width: 3000 
+    height: 3000
     margins:
       left: 0
       right: 0
@@ -72,7 +72,7 @@ vlsi.inputs.placement_constraints:
     obs_types: ["place"]
     x: 0
     y: 0
-    width: 400
+    width: 3000
     height: 1.08 # 1 core site tall, necessary to avoid shorts
 
 # VDD supply constraints
