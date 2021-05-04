@@ -258,7 +258,7 @@ module SVM_tb;
     endfunction : initialize_memory
 
 	function void write_power_yml_file();
-		power_yml_file = $fopen("../../src/SVM/svm_power.yml","w");
+		power_yml_file = $fopen("../../src/SVM_SRAM/svm_power.yml","w");
 		$fwrite(power_yml_file, "power.inputs.waveforms_meta: \"append\"\n");
 		$fwrite(power_yml_file, "power.inputs.waveforms:\n");
 		$fwrite(power_yml_file, "   - \"/tools/B/daniels/hammer-tsmc28/build/sim-par-rundir/svm.vcd\"\n\n");

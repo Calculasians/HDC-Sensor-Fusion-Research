@@ -10,4 +10,4 @@ power.inputs.saifs:
    - "/tools/B/daniels/hammer-tsmc28/build/sim-par-rundir/svm.saif"
 
 power.inputs.start_times: ["0"]
-power.inputs.end_times: ["57320"]
+power.inputs.end_times: ["720550"]
