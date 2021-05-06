@@ -10,7 +10,7 @@ synthesis.inputs:
                 "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/temporal_encoder.sv",
                 "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/fuser.sv",
                 "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/hv_binary_adder.sv",
-                "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/hv_generator.sv"
+                "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/hv_generator_serial_circular.sv"
                ]
   top_module: "hdc_sensor_fusion"
  
@@ -24,7 +24,7 @@ vlsi.inputs.power_spec_type: "cpf"
 
 # Specify clock signals
 vlsi.inputs.clocks: [
-  {name: "clk", period: "5ns", uncertainty: "0.1ns"}
+  {name: "clk", period: "550ns", uncertainty: "0.1ns"}
 ]
 
 vlsi.inputs.custom_sdc_constraints: [
@@ -65,8 +65,8 @@ vlsi.inputs.placement_constraints:
     type: toplevel
     x: 0
     y: 0
-    width: 500 
-    height: 500
+    width: 270 
+    height: 270
     margins:
       left: 0
       right: 0
@@ -77,7 +77,7 @@ vlsi.inputs.placement_constraints:
     obs_types: ["place"]
     x: 0
     y: 0
-    width: 500
+    width: 270
     height: 1.08 # 1 core site tall, necessary to avoid shorts
 
 # VDD supply constraints

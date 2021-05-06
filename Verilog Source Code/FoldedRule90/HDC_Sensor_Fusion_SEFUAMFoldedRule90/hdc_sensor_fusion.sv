@@ -1,8 +1,12 @@
 `include "const.vh"
 
+// 1 if generating 214 unique ims and using circular shifts, 
+// 0 if resetting im generation at the beginning of each modality
+`define SERIAL_CIRCULAR 1;
+
 module hdc_sensor_fusion #(
-	parameter NUM_FOLDS = 1,
-	parameter AM_NUM_FOLDS = 50
+	parameter NUM_FOLDS = 8,
+	parameter AM_NUM_FOLDS = 400
 ) (
 	input clk,  
 	input rst,   
@@ -76,6 +80,25 @@ module hdc_sensor_fusion #(
 	// Modules //
 	//---------//
 
+	`ifdef SERIAL_CIRCULAR
+	hv_generator_serial_circular #(
+		.NUM_FOLDS          (NUM_FOLDS),
+		.NUM_FOLDS_WIDTH    (NUM_FOLDS_WIDTH),
+		.FOLD_WIDTH         (FOLD_WIDTH)
+    ) HV_GEN (
+		.clk			(clk),
+		.rst			(rst),
+
+		.fin_valid		(fin_valid),
+		.fin_ready		(fin_ready),
+		.features		(features),
+
+		.dout_valid		(hv_gen_dout_valid),
+		.dout_ready		(se_din_ready),
+		.im_out			(im),
+		.projm_out		(projm)
+	);
+	`else
 	hv_generator #(
 		.NUM_FOLDS          (NUM_FOLDS),
 		.NUM_FOLDS_WIDTH    (NUM_FOLDS_WIDTH),
@@ -93,6 +116,7 @@ module hdc_sensor_fusion #(
 		.im_out			(im),
 		.projm_out		(projm)
 	);
+	`endif
 
 	spatial_encoder #(
 		.NUM_FOLDS          (NUM_FOLDS),

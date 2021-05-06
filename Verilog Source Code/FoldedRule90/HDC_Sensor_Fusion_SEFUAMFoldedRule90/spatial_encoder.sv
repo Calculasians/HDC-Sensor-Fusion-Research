@@ -7,7 +7,7 @@ module spatial_encoder #(
 ) (
 	input 								clk,
 	input 								rst,
-
+ 
 	input 								din_valid,
 	output 								din_ready,
 	input 		[FOLD_WIDTH-1:0]		im,

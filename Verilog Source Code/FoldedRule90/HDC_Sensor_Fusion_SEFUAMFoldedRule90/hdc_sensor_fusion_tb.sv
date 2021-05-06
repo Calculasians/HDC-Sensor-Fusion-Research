@@ -1,7 +1,12 @@
 `timescale 1ns / 1ps
 `include "const.vh"
-`define GL_SIM 1 // keep if doing gate-level simulation
+//`define GL_SIM 1 // keep if doing gate-level simulation
 //`define FIN_USE_1MS_TARGET // keep if asserting fin_fire only at every 1ms. Comment out if you want to assert fin_fire at random intervals maxed by max_wait_time
+
+// 1 if generating 214 unique ims and using circular shifts, 
+// 0 if resetting im generation at the beginning of each modality
+// change this in hdc_sensor_fusion.sv as well
+`define SERIAL_CIRCULAR 1;
 
 module hdc_sensor_fusion_tb;
  
@@ -10,8 +15,8 @@ module hdc_sensor_fusion_tb;
 	localparam max_wait_time_width		= `ceilLog2(max_wait_time);
 
 	// Should be a factor of 2000 (or `HV_DIMENSION)
-	localparam num_folds 	= 1;
-	localparam am_num_folds = 50;
+	localparam num_folds 	= 8;
+	localparam am_num_folds = 400;
 
 	reg clk, rst;
  
@@ -154,8 +159,13 @@ module hdc_sensor_fusion_tb;
 		integer i, j;
 
 		feature_file	= $fopen("../../src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/feature_binary.txt","r");
+		`ifdef SERIAL_CIRCULAR
+		$sformat(expected_v_filename, "../../src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/expected_v_%0dfolds_serial_circular.txt", num_folds);
+		$sformat(expected_a_filename, "../../src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/expected_a_%0dfolds_serial_circular.txt", num_folds);
+		`else
 		$sformat(expected_v_filename, "../../src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/expected_v_%0dfolds.txt", num_folds);
 		$sformat(expected_a_filename, "../../src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/expected_a_%0dfolds.txt", num_folds);
+		`endif
 		expected_v_file	= $fopen(expected_v_filename,"r");
 		expected_a_file	= $fopen(expected_a_filename,"r");
 

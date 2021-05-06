@@ -1,10 +1,11 @@
 `timescale 1ns / 1ps
 `include "const.vh"
+`define GL_SIM 1 // keep if doing gate-level simulation
 
 module hdc_sensor_fusion_tb;
 
-	localparam num_entry				= 10;
-	localparam max_wait_time			= 128;
+	localparam num_entry				= 20;
+	localparam max_wait_time			= 0;  // set to 0 to not wait between classifications
 	localparam total_hv					= 23;
 	localparam max_wait_time_width		= `ceilLog2(max_wait_time);
 
@@ -65,6 +66,7 @@ module hdc_sensor_fusion_tb;
 	// Files //
 	//-------//
 
+	integer power_yml_file;
 	integer hv_file;
 	integer feature_file;
 	integer expected_v_file;
@@ -105,6 +107,8 @@ module hdc_sensor_fusion_tb;
 
 	initial begin
 		$vcdpluson;
+		$dumpfile("hdc_sensor_fusion.vcd");
+		$dumpvars(1, hdc_sensor_fusion_tb.dut);
 		$set_toggle_region(dut);
 		$toggle_start();
 
@@ -148,6 +152,8 @@ module hdc_sensor_fusion_tb;
 		else
 			$display("%d entries does not matched\n\n!", num_fail);
 
+		write_power_yml_file();
+
 		$toggle_stop();
 		$toggle_report("../../build/sim-par-rundir/hdc_sensor_fusion.saif", 1.0e-9, dut);
 		$vcdplusoff;
@@ -181,6 +187,21 @@ module hdc_sensor_fusion_tb;
 		end
 
 	endfunction : initialize_memory
+
+	function void write_power_yml_file();
+		power_yml_file = $fopen("../../src/HDC_Sensor_Fusion_3M1P/hdc_sensor_fusion_power.yml","w");
+		$fwrite(power_yml_file, "power.inputs.waveforms_meta: \"append\"\n");
+		$fwrite(power_yml_file, "power.inputs.waveforms:\n");
+		$fwrite(power_yml_file, "   - \"/tools/B/daniels/hammer-tsmc28/build/sim-par-rundir/hdc_sensor_fusion.vcd\"\n\n");
+		$fwrite(power_yml_file, "power.inputs.database: \"/tools/B/daniels/hammer-tsmc28/build/par-rundir/latest\"\n");
+		$fwrite(power_yml_file, "power.inputs.tb_name: \"hdc_sensor_fusion_tb\"\n\n");
+		$fwrite(power_yml_file, "power.inputs.saifs_meta: \"append\"\n");
+		$fwrite(power_yml_file, "power.inputs.saifs:\n");
+		$fwrite(power_yml_file, "   - \"/tools/B/daniels/hammer-tsmc28/build/sim-par-rundir/hdc_sensor_fusion.saif\"\n\n");
+		$fwrite(power_yml_file, "power.inputs.start_times: [\"0\"]\n");
+		$fwrite(power_yml_file, "power.inputs.end_times: [\"%0d\"]\n", $time); 
+		$fclose(power_yml_file);
+	endfunction : write_power_yml_file
 
 	task write_srams;
 		integer i = 0;
@@ -302,9 +323,11 @@ module hdc_sensor_fusion_tb;
 
 			features_top = feature_memory[i];
 
+			`ifdef GL_SIM
 			@(negedge clk);
+			`endif
 			if (fin_ready) begin
-				@(posedge clk); // add this during post-par sim
+				@(posedge clk);
 				i = i + 1;
 				$display("Starting iteration %d", i);
 			end
@@ -322,16 +345,17 @@ module hdc_sensor_fusion_tb;
 
 		while (i < num_entry) begin
 
+			`ifdef GL_SIM
 			@(negedge clk);
-			//@(posedge clk);
+			`else
+			@(posedge clk);
+			`endif
 
 			if (fin_valid && ~fin_ready) fin_valid_high_ready_low = fin_valid_high_ready_low + 1;
 			if (~fin_valid && fin_ready) fin_valid_low_ready_high = fin_valid_low_ready_high + 1;
 			if (fin_valid && fin_ready) begin
 				start_time[i] = cycle;
 				i = i + 1;
-				@(posedge clk); // add these 2 posedge clks during post-par sim
-				@(posedge clk);
 			end
 
 		end
@@ -351,8 +375,9 @@ module hdc_sensor_fusion_tb;
 
 			dout_ready = 1'b1;
 
+			`ifdef GL_SIM
 			@(negedge dut.AM.clk);
-
+			`endif
 			if (dout_valid) i = i + 1;
 
 			@(posedge dut.AM.clk);
@@ -368,7 +393,11 @@ module hdc_sensor_fusion_tb;
 
 		while (i < num_entry) begin
 
+			`ifdef GL_SIM
 			@(negedge dut.AM.clk);
+			`else
+			@(posedge clk);
+			`endif
 
 			if (dout_valid && ~dout_ready) dout_valid_high_ready_low = dout_valid_high_ready_low + 1;
 			if (~dout_valid && dout_ready) dout_valid_low_ready_high = dout_valid_low_ready_high + 1;

@@ -11,7 +11,7 @@ sim.inputs.input_files:
    - "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/fuser.sv"
    - "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/spatial_encoder.sv"
    - "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/temporal_encoder.sv"
-   - "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/hv_generator.sv"
+   - "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/hv_generator_serial_circular.sv"
 
 sim.inputs:
   timescale: "1ns/1ps"

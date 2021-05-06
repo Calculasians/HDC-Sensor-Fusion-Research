@@ -25,7 +25,7 @@ vlsi.inputs.power_spec_type: "cpf"
 
 # Specify clock signals
 vlsi.inputs.clocks: [
-  {name: "clk", period: "4ns", uncertainty: "0.1ns"}
+  {name: "clk", period: "8928ns", uncertainty: "0.1ns"}
 ]
 
 vlsi.inputs.delays: [
@@ -70,8 +70,8 @@ vlsi.inputs.placement_constraints:
     type: toplevel
     x: 0
     y: 0
-    width: 2400
-    height: 1000
+    width: 1950
+    height: 1350
     margins:
       left: 0
       right: 0
@@ -150,152 +150,177 @@ vlsi.inputs.placement_constraints:
   
   - path: "hdc_sensor_fusion/MEMORY_2/sram1"
     type: hardmacro
-    x: 850
+    x: 1000
     y: 60
     master: "TSDN28HPMA16X72M4FW"
   - path: "hdc_sensor_fusion/MEMORY_2/sram2"
     type: hardmacro
-    x: 900
+    x: 1050
     y: 60
     master: "TSDN28HPMA16X72M4FW"
   - path: "hdc_sensor_fusion/MEMORY_2/sram3"
     type: hardmacro
-    x: 950
+    x: 1100
     y: 60
     master: "TSDN28HPMA16X72M4FW"
   - path: "hdc_sensor_fusion/MEMORY_2/sram4"
     type: hardmacro
-    x: 1000
+    x: 1150
     y: 60
     master: "TSDN28HPMA16X72M4FW"
   - path: "hdc_sensor_fusion/MEMORY_2/sram5"
     type: hardmacro
-    x: 1050
+    x: 1200
     y: 60
     master: "TSDN28HPMA16X72M4FW"
   - path: "hdc_sensor_fusion/MEMORY_2/sram6"
     type: hardmacro
-    x: 1100
+    x: 1250
     y: 60
     master: "TSDN28HPMA16X72M4FW"
   - path: "hdc_sensor_fusion/MEMORY_2/sram7"
     type: hardmacro
-    x: 1150
+    x: 1300
     y: 60
     master: "TSDN28HPMA16X72M4FW"
   - path: "hdc_sensor_fusion/MEMORY_2/sram8"
     type: hardmacro
-    x: 1200
+    x: 1350
     y: 60
     master: "TSDN28HPMA16X72M4FW"
   - path: "hdc_sensor_fusion/MEMORY_2/sram9"
     type: hardmacro
-    x: 1250
+    x: 1400
     y: 60
     master: "TSDN28HPMA16X72M4FW"
   - path: "hdc_sensor_fusion/MEMORY_2/sram10"
     type: hardmacro
-    x: 1300
+    x: 1450
     y: 60
     master: "TSDN28HPMA16X72M4FW"
   - path: "hdc_sensor_fusion/MEMORY_2/sram11"
     type: hardmacro
-    x: 1350
+    x: 1500
     y: 60
     master: "TSDN28HPMA16X72M4FW"
   - path: "hdc_sensor_fusion/MEMORY_2/sram12"
     type: hardmacro
-    x: 1400
+    x: 1550
     y: 60
     master: "TSDN28HPMA16X72M4FW"
   - path: "hdc_sensor_fusion/MEMORY_2/sram13"
     type: hardmacro
-    x: 1450
+    x: 1600
     y: 60
     master: "TSDN28HPMA16X72M4FW"
   - path: "hdc_sensor_fusion/MEMORY_2/sram14"
     type: hardmacro
-    x: 1500
+    x: 1650
     y: 60
     master: "TSDN28HPMA16X64M4FW"
 
   - path: "hdc_sensor_fusion/MEMORY_3/sram1"
     type: hardmacro
-    x: 1600
-    y: 60
+    x: 100
+    y: 700
     master: "TSDN28HPMA16X72M4FW"
   - path: "hdc_sensor_fusion/MEMORY_3/sram2"
     type: hardmacro
-    x: 1650
-    y: 60
+    x: 150
+    y: 700
     master: "TSDN28HPMA16X72M4FW"
   - path: "hdc_sensor_fusion/MEMORY_3/sram3"
     type: hardmacro
-    x: 1700
-    y: 60
+    x: 200
+    y: 700
     master: "TSDN28HPMA16X72M4FW"
   - path: "hdc_sensor_fusion/MEMORY_3/sram4"
     type: hardmacro
-    x: 1750
-    y: 60
+    x: 250
+    y: 700
     master: "TSDN28HPMA16X72M4FW"
   - path: "hdc_sensor_fusion/MEMORY_3/sram5"
     type: hardmacro
-    x: 1800
-    y: 60
+    x: 300
+    y: 700
     master: "TSDN28HPMA16X72M4FW"
   - path: "hdc_sensor_fusion/MEMORY_3/sram6"
     type: hardmacro
-    x: 1850
-    y: 60
+    x: 350
+    y: 700
     master: "TSDN28HPMA16X72M4FW"
   - path: "hdc_sensor_fusion/MEMORY_3/sram7"
     type: hardmacro
-    x: 1900
-    y: 60
+    x: 400
+    y: 700
     master: "TSDN28HPMA16X72M4FW"
   - path: "hdc_sensor_fusion/MEMORY_3/sram8"
     type: hardmacro
-    x: 1950
-    y: 60
+    x: 450
+    y: 700
     master: "TSDN28HPMA16X72M4FW"
   - path: "hdc_sensor_fusion/MEMORY_3/sram9"
     type: hardmacro
-    x: 2000
-    y: 60
+    x: 500
+    y: 700
     master: "TSDN28HPMA16X72M4FW"
   - path: "hdc_sensor_fusion/MEMORY_3/sram10"
     type: hardmacro
-    x: 2050
-    y: 60
+    x: 550
+    y: 700
     master: "TSDN28HPMA16X72M4FW"
   - path: "hdc_sensor_fusion/MEMORY_3/sram11"
     type: hardmacro
-    x: 2100
-    y: 60
+    x: 600
+    y: 700
     master: "TSDN28HPMA16X72M4FW"
   - path: "hdc_sensor_fusion/MEMORY_3/sram12"
     type: hardmacro
-    x: 2150
-    y: 60
+    x: 650
+    y: 700
     master: "TSDN28HPMA16X72M4FW"
   - path: "hdc_sensor_fusion/MEMORY_3/sram13"
     type: hardmacro
-    x: 2200
-    y: 60
+    x: 700
+    y: 700
     master: "TSDN28HPMA16X72M4FW"
   - path: "hdc_sensor_fusion/MEMORY_3/sram14"
     type: hardmacro
-    x: 2250
-    y: 60
+    x: 750
+    y: 700
     master: "TSDN28HPMA16X64M4FW"
   - path: "hdc_sensor_fusion/place_obs_bottom"
     type: obstruction
     obs_types: ["place"]
     x: 0
     y: 0
-    width: 2400
+    width: 1950
     height: 1.08
+
+# VDD supply constraints
+vlsi.inputs.supplies:
+  VDD: "0.90 V"
+  GND: "0 V"
+vlsi.inputs.mmmc_corners: [
+  {
+    "name": "ss0p81v125c",
+    "type": "setup",
+    "voltage": "0.81 V",
+    "temp": "125 C"
+  },
+  {
+    "name": "ff0p99v0c",
+    "type": "hold",
+    "voltage": "0.99 V",
+    "temp": "0 C"
+  },
+  {
+    "name": "tt0p9v25c",
+    "type": "extra",
+    "voltage": "0.90 V",
+    "temp": "25 C"
+  }
+]
 
 # Pin placement constraints
 vlsi.inputs.pin_mode: generated

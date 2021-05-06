@@ -16,7 +16,7 @@ sim.inputs:
     - "+v2k"
     - "+lint=all,noVCDE"
     - "+incdir+../../src/HDC_Sensor_Fusion_3M1P"
-    - "+define+CLOCK_PERIOD=4"
+    - "+define+CLOCK_PERIOD=8928"
     - "-sverilog"
     - "-debug_acc+pp"
     - "-debug_acc+all"

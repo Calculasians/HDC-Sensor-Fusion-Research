@@ -46,5 +46,5 @@ module temporal_encoder (
 		hvout = ngram[0];
 		for (i = 1; i < `NGRAM_SIZE; i = i + 1) hvout = hvout ^ ngram[i];
 	end
-
+ 
 endmodule
