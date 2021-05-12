@@ -5,8 +5,8 @@
 `define SERIAL_CIRCULAR 1;
 
 module hdc_sensor_fusion #(
-	parameter NUM_FOLDS = 1, 
-	parameter AM_NUM_FOLDS = 50
+	parameter NUM_FOLDS = 4, 
+	parameter AM_NUM_FOLDS = 6
 ) (
 	input clk,  
 	input rst,   

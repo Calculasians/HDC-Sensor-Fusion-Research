@@ -63,13 +63,28 @@ class HDCTop:
 		self.fuser_history = []
 		self.te_history = []
 
+		self.vp_im = []
+		self.vm_im = []
+		self.vp_SE_GSR_history = []
+		self.vp_SE_ECG_history = []
+		self.vp_SE_EEG_history = []
+		self.vm_SE_GSR_history = []
+		self.vm_SE_ECG_history = []
+		self.vm_SE_EEG_history = []
+		self.vp_fuser_history = []
+		self.vm_fuser_history = []
+		self.vp_te_history = []
+		self.vm_te_history = []
+
 		self.predicted_v_history = []
 		self.predicted_a_history = []
 
 	# Train the prototype hypervectors inside the associative memory
 	def train_am(self):
 		self.run('v_plus', self.feature_memory.train_data_v_plus)
+		self.vp_im = self.im
 		self.run('v_min', self.feature_memory.train_data_v_min)
+		self.vm_im = self.im
 		self.run('a_high', self.feature_memory.train_data_a_high)
 		self.run('a_low', self.feature_memory.train_data_a_low)
 
@@ -88,6 +103,17 @@ class HDCTop:
 
 		for i in range(len(features)):
 			self.run_spatial_encoder(features.iloc[i,:])
+
+			if (label == 'v_plus'):
+				self.vp_SE_GSR_history.append(self.spatial_encoder_GSR.output_R.tolist())
+				self.vp_SE_ECG_history.append(self.spatial_encoder_ECG.output_R.tolist())
+				self.vp_SE_EEG_history.append(self.spatial_encoder_EEG.output_R.tolist())
+			
+			if (label == 'v_min'):
+				self.vm_SE_GSR_history.append(self.spatial_encoder_GSR.output_R.tolist())
+				self.vm_SE_ECG_history.append(self.spatial_encoder_ECG.output_R.tolist())
+				self.vm_SE_EEG_history.append(self.spatial_encoder_EEG.output_R.tolist())
+
 			if (self.is_early_fusion):
 				self.output_R_fused = utils.bundle([self.spatial_encoder_GSR.output_R, 
 									 				self.spatial_encoder_ECG.output_R, 
@@ -95,6 +121,12 @@ class HDCTop:
 
 			if (label == 'test'):
 				self.fuser_history.append(self.output_R_fused)
+
+			if (label == 'v_plus'):
+				self.vp_fuser_history.append(self.output_R_fused)
+			
+			if (label == 'v_min'):
+				self.vm_fuser_history.append(self.output_R_fused)
 
 			self.run_temporal_encoder()
 			if (not self.is_early_fusion):
@@ -104,6 +136,12 @@ class HDCTop:
 
 			if (label == 'test'):
 				self.te_history.append(self.temporal_encoder.output_T.tolist())
+
+			if (label == 'v_plus'):
+				self.vp_te_history.append(self.temporal_encoder.output_T.tolist())
+
+			if (label == 'v_min'):
+				self.vm_te_history.append(self.temporal_encoder.output_T.tolist())
 
 			if (i > 1):
 				if (label == 'test'):
