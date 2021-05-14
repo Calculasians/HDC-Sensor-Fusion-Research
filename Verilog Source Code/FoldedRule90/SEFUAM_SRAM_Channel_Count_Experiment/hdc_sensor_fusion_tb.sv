@@ -15,8 +15,11 @@ module hdc_sensor_fusion_tb;
 	localparam max_wait_time_width		= `ceilLog2(max_wait_time);
 
 	// Should be a factor of 2000 (or `HV_DIMENSION)
-	localparam num_folds 	= 4;
-	localparam am_num_folds = 99;
+	localparam num_folds 		= 4;
+	localparam am_num_folds 	= 200;
+	localparam sram_addr_width	= 10;
+
+	localparam fold_width 		= `HV_DIMENSION / num_folds;
 
 	reg clk, rst;
  
@@ -33,11 +36,17 @@ module hdc_sensor_fusion_tb;
 	wire valence;
 	wire arousal;
 
+	reg  we;
+	reg  [sram_addr_width-1:0] im_write_addr;
+	reg  [fold_width-1:0] im_din;
+
 	hdc_sensor_fusion
 	`ifndef GL_SIM
 	   #(	
             .NUM_FOLDS          (num_folds),
-			.AM_NUM_FOLDS		(am_num_folds)
+			.AM_NUM_FOLDS		(am_num_folds),
+			.SRAM_ADDR_WIDTH	(sram_addr_width),
+			.FOLD_WIDTH 		(fold_width)
         ) dut (
 	`else
 		dut (
@@ -52,7 +61,11 @@ module hdc_sensor_fusion_tb;
 		.valence			(valence),
 		.arousal			(arousal),
 		.dout_valid			(dout_valid),
-		.dout_ready			(dout_ready)
+		.dout_ready			(dout_ready),
+
+		.we  				(we),
+		.im_write_addr 		(im_write_addr),
+		.im_din 			(im_din)
 	);
 
 	//-------//
@@ -61,12 +74,14 @@ module hdc_sensor_fusion_tb;
 	
 	integer power_yml_file;
 
+	integer im_file;
 	integer feature_file;
 	string  expected_v_filename;
 	string  expected_a_filename;
 	integer expected_v_file;
 	integer expected_a_file;
 
+	integer get_im;
 	integer get_feature;
 	integer get_expected_v;
 	integer get_expected_a;
@@ -75,6 +90,7 @@ module hdc_sensor_fusion_tb;
 	// Memory //
 	//--------//
 
+	reg  [fold_width-1:0] im_memory[`TOTAL_NUM_CHANNEL*num_folds-1:0];
 	reg  [`TOTAL_NUM_CHANNEL*`CHANNEL_WIDTH-1:0] feature_memory[num_entry-1:0];
 	reg  expected_v_memory[num_entry-1:0];
 	reg  expected_a_memory[num_entry-1:0];
@@ -111,12 +127,15 @@ module hdc_sensor_fusion_tb;
 
 		fin_valid  = 1'b0;
 		dout_ready = 1'b0;
+		we = 1'b1;
 
 		repeat (2) @(posedge clk);
 		rst = 1'b1;
 		repeat (5) @(posedge clk);
 		rst = 1'b0;
 		repeat (2) @(posedge clk);
+
+		write_sram();
 
 		fork
 			start_fin_sequence();
@@ -158,20 +177,25 @@ module hdc_sensor_fusion_tb;
 	function void initialize_memory();
 		integer i, j;
 
-		feature_file	= $fopen("../../src/SEFUAM_Channel_Count_Experiment/feature_binary.txt","r");
+		im_file 		= $fopen("../../src/SEFUAM_SRAM_Channel_Count_Experiment/im_4folds_foldbyfold.txt", "r");
+		feature_file	= $fopen("../../src/SEFUAM_SRAM_Channel_Count_Experiment/feature_binary.txt", "r");
 		`ifdef SERIAL_CIRCULAR
-		$sformat(expected_v_filename, "../../src/SEFUAM_Channel_Count_Experiment/expected_v_%0dfolds_serial_circular.txt", num_folds);
-		$sformat(expected_a_filename, "../../src/SEFUAM_Channel_Count_Experiment/expected_a_%0dfolds_serial_circular.txt", num_folds);
+		$sformat(expected_v_filename, "../../src/SEFUAM_SRAM_Channel_Count_Experiment/expected_v_%0dfolds_serial_circular.txt", num_folds);
+		$sformat(expected_a_filename, "../../src/SEFUAM_SRAM_Channel_Count_Experiment/expected_a_%0dfolds_serial_circular.txt", num_folds);
 		`else
-		$sformat(expected_v_filename, "../../src/SEFUAM_Channel_Count_Experiment/expected_v_%0dfolds.txt", num_folds);
-		$sformat(expected_a_filename, "../../src/SEFUAM_Channel_Count_Experiment/expected_a_%0dfolds.txt", num_folds);
+		$sformat(expected_v_filename, "../../src/SEFUAM_SRAM_Channel_Count_Experiment/expected_v_%0dfolds.txt", num_folds);
+		$sformat(expected_a_filename, "../../src/SEFUAM_SRAM_Channel_Count_Experiment/expected_a_%0dfolds.txt", num_folds);
 		`endif
-		expected_v_file	= $fopen(expected_v_filename,"r");
-		expected_a_file	= $fopen(expected_a_filename,"r");
+		expected_v_file	= $fopen(expected_v_filename, "r");
+		expected_a_file	= $fopen(expected_a_filename, "r");
 
-		if (feature_file == 0 || expected_v_file == 0 || expected_a_file == 0) begin
+		if (im_file == 0 || feature_file == 0 || expected_v_file == 0 || expected_a_file == 0) begin
 			$display("Data Fetch Error");
 			$finish();
+		end
+
+		for (i = 0; i < `TOTAL_NUM_CHANNEL * num_folds; i = i + 1) begin
+			get_im = $fscanf(im_file, "%b\n", im_memory[i]);
 		end
 
 		for (i = 0; i < num_entry; i = i + 1) begin
@@ -186,7 +210,7 @@ module hdc_sensor_fusion_tb;
 	endfunction : initialize_memory
 
 	function void write_power_yml_file();
-		power_yml_file = $fopen("../../src/SEFUAM_Channel_Count_Experiment/hdc_sensor_fusion_power.yml","w");
+		power_yml_file = $fopen("../../src/SEFUAM_SRAM_Channel_Count_Experiment/hdc_sensor_fusion_power.yml","w");
 		$fwrite(power_yml_file, "power.inputs.waveforms_meta: \"append\"\n");
 		$fwrite(power_yml_file, "power.inputs.waveforms:\n");
 		$fwrite(power_yml_file, "   - \"/tools/B/daniels/hammer-tsmc28/build/sim-par-rundir/hdc_sensor_fusion.vcd\"\n\n");
@@ -206,6 +230,28 @@ module hdc_sensor_fusion_tb;
 			cycle = cycle + 1;
 		end
 	endtask : start_cycle_counter
+
+	task write_sram;
+
+		integer i = 0;
+
+		@(posedge clk);
+
+		we = 1'b0;
+		while (i < `TOTAL_NUM_CHANNEL*num_folds) begin
+			im_write_addr	= i;
+			im_din			= im_memory[i];
+
+			@(posedge clk);
+			i = i + 1;
+		end
+
+		@(posedge clk);
+		we = 1'b1;
+
+		@(posedge clk);
+
+	endtask : write_sram
 
 	task start_fin_sequence;
 

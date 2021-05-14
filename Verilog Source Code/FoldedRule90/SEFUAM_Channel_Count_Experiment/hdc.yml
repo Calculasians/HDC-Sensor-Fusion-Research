@@ -4,13 +4,13 @@ vlsi.core.max_threads: 24
 # File inputs
 synthesis.inputs:
   input_files: [
-                "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/hdc_sensor_fusion.sv",
-                "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/associative_memory.sv",
-                "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/spatial_encoder.sv",
-                "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/temporal_encoder.sv",
-                "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/fuser.sv",
-                "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/hv_binary_adder.sv",
-                "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/hv_generator_serial_circular.sv"
+                "src/SEFUAM_Channel_Count_Experiment/hdc_sensor_fusion.sv",
+                "src/SEFUAM_Channel_Count_Experiment/associative_memory.sv",
+                "src/SEFUAM_Channel_Count_Experiment/spatial_encoder.sv",
+                "src/SEFUAM_Channel_Count_Experiment/temporal_encoder.sv",
+                "src/SEFUAM_Channel_Count_Experiment/fuser.sv",
+                "src/SEFUAM_Channel_Count_Experiment/hv_binary_adder.sv",
+                "src/SEFUAM_Channel_Count_Experiment/hv_generator_serial_circular.sv"
                ]
   top_module: "hdc_sensor_fusion"
  
@@ -24,7 +24,7 @@ vlsi.inputs.power_spec_type: "cpf"
 
 # Specify clock signals
 vlsi.inputs.clocks: [
-  {name: "clk", period: "4ns", uncertainty: "0.1ns"}
+  {name: "clk", period: "2512ns", uncertainty: "0.1ns"}
 ]
 
 vlsi.inputs.custom_sdc_constraints: [
@@ -65,8 +65,8 @@ vlsi.inputs.placement_constraints:
     type: toplevel
     x: 0
     y: 0
-    width: 480 
-    height: 480
+    width: 310 
+    height: 310
     margins:
       left: 0
       right: 0
@@ -77,7 +77,7 @@ vlsi.inputs.placement_constraints:
     obs_types: ["place"]
     x: 0
     y: 0
-    width: 480
+    width: 310
     height: 1.08 # 1 core site tall, necessary to avoid shorts
 
 # VDD supply constraints

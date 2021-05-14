@@ -10,4 +10,4 @@ power.inputs.saifs:
    - "/tools/B/daniels/hammer-tsmc28/build/sim-par-rundir/hdc_sensor_fusion.saif"
 
 power.inputs.start_times: ["0"]
-power.inputs.end_times: ["20975200"]
+power.inputs.end_times: ["20958300"]

@@ -3,7 +3,7 @@ sim.inputs.tb_name: "hdc_sensor_fusion_tb"
 sim.inputs.input_files_meta: "append"
 sim.inputs.input_files:
     - "src/../build/par-rundir/hdc_sensor_fusion.sim.v"
-    - "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/hdc_sensor_fusion_tb.sv"
+    - "src/SEFUAM_SRAM_Channel_Count_Experiment/hdc_sensor_fusion_tb.sv"
 
 sim.inputs.level: "gl"
 
@@ -15,7 +15,7 @@ sim.inputs:
     - "-line"
     - "+v2k"
     - "+lint=all,noVCDE"
-    - "+incdir+../../src/HDC_Sensor_Fusion_SEFUAMFoldedRule90"
+    - "+incdir+../../src/SEFUAM_SRAM_Channel_Count_Experiment"
     - "+define+CLOCK_PERIOD=1100"
     - "-sverilog"
     - "-debug_acc+pp"
@@ -24,6 +24,7 @@ sim.inputs:
 
   execute_sim: true
   execution_flags: ["+verbose=1"]
+
 
 
 

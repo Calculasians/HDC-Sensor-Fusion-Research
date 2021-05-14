@@ -6,19 +6,26 @@
 
 module hdc_sensor_fusion #(
 	parameter NUM_FOLDS = 4, 
-	parameter AM_NUM_FOLDS = 200
+	parameter AM_NUM_FOLDS = 200,
+	parameter SRAM_ADDR_WIDTH = 10,
+	parameter FOLD_WIDTH = `HV_DIMENSION / NUM_FOLDS
 ) (
 	input clk,  
 	input rst,   
 
-	input  fin_valid, 
+	input  fin_valid,
 	output fin_ready,
 	input [`TOTAL_NUM_CHANNEL*`CHANNEL_WIDTH-1:0] features_top,
 
 	output dout_valid,
 	input  dout_ready,
 	output valence, 
-	output arousal
+	output arousal,
+
+	// SRAM signals
+	input		we,
+	input 		[SRAM_ADDR_WIDTH-1:0] im_write_addr,
+	input 		[FOLD_WIDTH-1:0] im_din
 ); 
 
 	//-----------// 
@@ -26,7 +33,6 @@ module hdc_sensor_fusion #(
 	//-----------//
 
 	localparam NUM_FOLDS_WIDTH		= `ceilLog2(NUM_FOLDS);
-	localparam FOLD_WIDTH			= 2000 / NUM_FOLDS;
 
 	localparam AM_NUM_FOLDS_WIDTH	= `ceilLog2(AM_NUM_FOLDS);
 	localparam AM_FOLD_WIDTH 		= 2000 / AM_NUM_FOLDS;
@@ -84,7 +90,8 @@ module hdc_sensor_fusion #(
 	hv_generator_serial_circular #(
 		.NUM_FOLDS          (NUM_FOLDS),
 		.NUM_FOLDS_WIDTH    (NUM_FOLDS_WIDTH),
-		.FOLD_WIDTH         (FOLD_WIDTH)
+		.FOLD_WIDTH         (FOLD_WIDTH),
+		.SRAM_ADDR_WIDTH	(SRAM_ADDR_WIDTH)
     ) HV_GEN (
 		.clk			(clk),
 		.rst			(rst),
@@ -96,7 +103,11 @@ module hdc_sensor_fusion #(
 		.dout_valid		(hv_gen_dout_valid),
 		.dout_ready		(se_din_ready),
 		.im_out			(im),
-		.projm_out		(projm)
+		.projm_out		(projm),
+
+		.we    			(we),
+		.im_write_addr 	(im_write_addr),
+		.im_din 		(im_din)
 	);
 	`else
 	hv_generator #(
@@ -189,3 +200,4 @@ module hdc_sensor_fusion #(
 	);
 
 endmodule : hdc_sensor_fusion
+

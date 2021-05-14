@@ -4,14 +4,14 @@ sim.inputs.tb_name: "hdc_sensor_fusion_tb"
 
 sim.inputs.input_files_meta: "append"
 sim.inputs.input_files:
-   - "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/hdc_sensor_fusion.sv"
-   - "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/hdc_sensor_fusion_tb.sv"
-   - "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/associative_memory.sv"
-   - "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/hv_binary_adder.sv"
-   - "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/fuser.sv"
-   - "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/spatial_encoder.sv"
-   - "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/temporal_encoder.sv"
-   - "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/hv_generator_serial_circular.sv"
+   - "src/SEFUAM_Channel_Count_Experiment/hdc_sensor_fusion.sv"
+   - "src/SEFUAM_Channel_Count_Experiment/hdc_sensor_fusion_tb.sv"
+   - "src/SEFUAM_Channel_Count_Experiment/associative_memory.sv"
+   - "src/SEFUAM_Channel_Count_Experiment/hv_binary_adder.sv"
+   - "src/SEFUAM_Channel_Count_Experiment/fuser.sv"
+   - "src/SEFUAM_Channel_Count_Experiment/spatial_encoder.sv"
+   - "src/SEFUAM_Channel_Count_Experiment/temporal_encoder.sv"
+   - "src/SEFUAM_Channel_Count_Experiment/hv_generator_serial_circular.sv"
 
 sim.inputs:
   timescale: "1ns/1ps"
@@ -22,8 +22,8 @@ sim.inputs:
     - "-debug_all"
     - "+v2k"
     - "+lint=all,noVCDE"
-    - "+incdir+../../src/HDC_Sensor_Fusion_SEFUAMFoldedRule90"
-    - "+define+CLOCK_PERIOD=4400"
+    - "+incdir+../../src/SEFUAM_Channel_Count_Experiment"
+    - "+define+CLOCK_PERIOD=2512"
     - "-sverilog"
 
   execute_sim: true

@@ -15,8 +15,8 @@ module hdc_sensor_fusion_tb;
 	localparam max_wait_time_width		= `ceilLog2(max_wait_time);
 
 	// Should be a factor of 2000 (or `HV_DIMENSION)
-	localparam num_folds 	= 1;
-	localparam am_num_folds = 50;
+	localparam num_folds 	= 4;
+	localparam am_num_folds = 200;
 
 	reg clk, rst;
  

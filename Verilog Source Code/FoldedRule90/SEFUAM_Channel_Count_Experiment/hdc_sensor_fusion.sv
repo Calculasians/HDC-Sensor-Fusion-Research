@@ -6,12 +6,12 @@
 
 module hdc_sensor_fusion #(
 	parameter NUM_FOLDS = 4, 
-	parameter AM_NUM_FOLDS = 6
+	parameter AM_NUM_FOLDS = 99
 ) (
 	input clk,  
 	input rst,   
 
-	input  fin_valid,
+	input  fin_valid, 
 	output fin_ready,
 	input [`TOTAL_NUM_CHANNEL*`CHANNEL_WIDTH-1:0] features_top,
 
@@ -189,3 +189,4 @@ module hdc_sensor_fusion #(
 	);
 
 endmodule : hdc_sensor_fusion
+

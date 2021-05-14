@@ -4,13 +4,14 @@ vlsi.core.max_threads: 24
 # File inputs
 synthesis.inputs:
   input_files: [
-                "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/hdc_sensor_fusion.sv",
-                "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/associative_memory.sv",
-                "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/spatial_encoder.sv",
-                "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/temporal_encoder.sv",
-                "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/fuser.sv",
-                "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/hv_binary_adder.sv",
-                "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/hv_generator_serial_circular.sv"
+                "src/SEFUAM_SRAM_Channel_Count_Experiment/hdc_sensor_fusion.sv",
+                "src/SEFUAM_SRAM_Channel_Count_Experiment/associative_memory.sv",
+                "src/SEFUAM_SRAM_Channel_Count_Experiment/spatial_encoder.sv",
+                "src/SEFUAM_SRAM_Channel_Count_Experiment/temporal_encoder.sv",
+                "src/SEFUAM_SRAM_Channel_Count_Experiment/fuser.sv",
+                "src/SEFUAM_SRAM_Channel_Count_Experiment/hv_binary_adder.sv",
+                "src/SEFUAM_SRAM_Channel_Count_Experiment/hv_generator_serial_circular.sv",
+                "src/SEFUAM_SRAM_Channel_Count_Experiment/memory_wrapper.sv"                
                ]
   top_module: "hdc_sensor_fusion"
  
@@ -65,42 +66,62 @@ vlsi.inputs.placement_constraints:
     type: toplevel
     x: 0
     y: 0
-    width: 310 
-    height: 310
+    width: 700 
+    height: 700
     margins:
       left: 0
       right: 0
       top: 0
       bottom: 0
+  - path: "hdc_sensor_fusion/HV_GEN/MW/IM_SRAM1"
+    type: hardmacro
+    x: 50
+    y: 50
+    master: "TS1N28HPMFHVTB864X144M4SW"
+  - path: "hdc_sensor_fusion/HV_GEN/MW/IM_SRAM2"
+    type: hardmacro
+    x: 200
+    y: 50
+    master: "TS1N28HPMFHVTB864X144M4SW"
+  - path: "hdc_sensor_fusion/HV_GEN/MW/IM_SRAM3"
+    type: hardmacro
+    x: 350
+    y: 50
+    master: "TS1N28HPMFHVTB864X144M4SW"
+  - path: "hdc_sensor_fusion/HV_GEN/MW/IM_SRAM4"
+    type: hardmacro
+    x: 500
+    y: 50
+    master: "TS1N28HPMFHVTB864X68M4SW"
   - path: "hdc_sensor_fusion/place_obs_bottom"
     type: obstruction
     obs_types: ["place"]
     x: 0
     y: 0
-    width: 310
+    width: 700
     height: 1.08 # 1 core site tall, necessary to avoid shorts
 
 # VDD supply constraints
 vlsi.inputs.supplies:
-  VDD: "0.80 V"
+  VDD: "0.90 V"
   GND: "0 V"
 vlsi.inputs.mmmc_corners: [
   {
-    "name": "ss0p72v125c",
+    "name": "ss0p81v125c",
     "type": "setup",
-    "voltage": "0.72 V",
+    "voltage": "0.81 V",
     "temp": "125 C"
   },
   {
-    "name": "ff0p88v0c",
+    "name": "ff0p99v0c",
     "type": "hold",
-    "voltage": "0.88 V",
+    "voltage": "0.99 V",
     "temp": "0 C"
   },
   {
-    "name": "tt0p8v25c",
+    "name": "tt0p9v25c",
     "type": "extra",
-    "voltage": "0.80 V",
+    "voltage": "0.90 V",
     "temp": "25 C"
   }
 ]
@@ -116,4 +137,5 @@ vlsi.inputs.pin.assignments: [
 vlsi.core.sram_generator_tool: "sram_compiler"
 vlsi.core.sram_generator_tool_path: ["hammer-tstech28-plugin"]
 vlsi.core.sram_generator_tool_path_meta: "append"
+
 
