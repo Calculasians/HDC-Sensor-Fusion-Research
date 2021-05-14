@@ -4,7 +4,7 @@
 module hdc_sensor_fusion_tb;
 
 	localparam num_entry				= 20;
-	localparam max_wait_time			= 280;
+	localparam max_wait_time			= 0;
 	localparam max_wait_time_width		= `ceilLog2(max_wait_time);
 
 	reg clk, rst;
@@ -88,6 +88,8 @@ module hdc_sensor_fusion_tb;
 	// Files //
 	//-------//
 
+	integer power_yml_file;
+
 	integer GSR_im_file;
 	integer GSR_projm_pos_file;
 	integer GSR_projm_neg_file;
@@ -160,6 +162,8 @@ module hdc_sensor_fusion_tb;
 
 	initial begin
 		$vcdpluson;
+		$dumpfile("hdc_sensor_fusion.vcd");
+		$dumpvars(1, hdc_sensor_fusion_tb.dut);
 		$set_toggle_region(dut);
 		$toggle_start();
 
@@ -203,6 +207,8 @@ module hdc_sensor_fusion_tb;
 			$display("All entries matched!\n");
 		else
 			$display("%d entries does not matched\n\n!", num_fail);
+
+		write_power_yml_file();
 
 		$toggle_stop();
 		$toggle_report("../../build/sim-par-rundir/hdc_sensor_fusion.saif", 1.0e-9, dut);
@@ -268,6 +274,21 @@ module hdc_sensor_fusion_tb;
 		end
 
 	endfunction : initialize_memory
+
+	function void write_power_yml_file();
+		power_yml_file = $fopen("../../src/HDC_Sensor_Fusion_9M/hdc_sensor_fusion_power.yml","w");
+		$fwrite(power_yml_file, "power.inputs.waveforms_meta: \"append\"\n");
+		$fwrite(power_yml_file, "power.inputs.waveforms:\n");
+		$fwrite(power_yml_file, "   - \"/tools/B/daniels/hammer-tsmc28/build/sim-par-rundir/hdc_sensor_fusion.vcd\"\n\n");
+		$fwrite(power_yml_file, "power.inputs.database: \"/tools/B/daniels/hammer-tsmc28/build/par-rundir/latest\"\n");
+		$fwrite(power_yml_file, "power.inputs.tb_name: \"hdc_sensor_fusion_tb\"\n\n");
+		$fwrite(power_yml_file, "power.inputs.saifs_meta: \"append\"\n");
+		$fwrite(power_yml_file, "power.inputs.saifs:\n");
+		$fwrite(power_yml_file, "   - \"/tools/B/daniels/hammer-tsmc28/build/sim-par-rundir/hdc_sensor_fusion.saif\"\n\n");
+		$fwrite(power_yml_file, "power.inputs.start_times: [\"0\"]\n");
+		$fwrite(power_yml_file, "power.inputs.end_times: [\"%0d\"]\n", $time); 
+		$fclose(power_yml_file);
+	endfunction : write_power_yml_file
 
 	task write_srams;
 		integer i = 0;

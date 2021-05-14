@@ -27,19 +27,7 @@ vlsi.inputs.power_spec_type: "cpf"
 
 # Specify clock signals
 vlsi.inputs.clocks: [
-  {name: "clk", period: "4.2ns", uncertainty: "0.1ns"}
-]
-
-vlsi.inputs.delays: [
-  {name: "FPGA_GSR_im_sram_hvin", clock: "clk", direction: "input", delay: "0.6"},
-  {name: "FPGA_GSR_projm_pos_sram_hvin", clock: "clk", direction: "input", delay: "0.6"},
-  {name: "FPGA_GSR_projm_neg_sram_hvin", clock: "clk", direction: "input", delay: "0.6"},
-  {name: "FPGA_ECG_im_sram_hvin", clock: "clk", direction: "input", delay: "0.6"},
-  {name: "FPGA_ECG_projm_pos_sram_hvin", clock: "clk", direction: "input", delay: "0.6"},
-  {name: "FPGA_ECG_projm_neg_sram_hvin", clock: "clk", direction: "input", delay: "0.6"},
-  {name: "FPGA_EEG_im_sram_hvin", clock: "clk", direction: "input", delay: "0.6"},
-  {name: "FPGA_EEG_projm_pos_sram_hvin", clock: "clk", direction: "input", delay: "0.6"},
-  {name: "FPGA_EEG_projm_neg_sram_hvin", clock: "clk", direction: "input", delay: "0.6"}
+  {name: "clk", period: "9009ns", uncertainty: "0.1ns"}
 ]
 
 vlsi.inputs.custom_sdc_constraints: [
@@ -81,7 +69,7 @@ vlsi.inputs.placement_constraints:
     x: 0
     y: 0
     width: 2500
-    height: 2200
+    height: 2100
     margins:
       left: 0
       right: 0
@@ -733,6 +721,31 @@ vlsi.inputs.placement_constraints:
     y: 0
     width: 2500
     height: 1.08
+
+# VDD supply constraints
+vlsi.inputs.supplies:
+  VDD: "0.90 V"
+  GND: "0 V"
+vlsi.inputs.mmmc_corners: [
+  {
+    "name": "ss0p81v125c",
+    "type": "setup",
+    "voltage": "0.81 V",
+    "temp": "125 C"
+  },
+  {
+    "name": "ff0p99v0c",
+    "type": "hold",
+    "voltage": "0.99 V",
+    "temp": "0 C"
+  },
+  {
+    "name": "tt0p9v25c",
+    "type": "extra",
+    "voltage": "0.90 V",
+    "temp": "25 C"
+  }
+]
 
 # Pin placement constraints
 vlsi.inputs.pin_mode: generated
