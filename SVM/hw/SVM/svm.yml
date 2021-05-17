@@ -1,0 +1,114 @@
+# Technology Setup is done in hammer-tstech28-plugin/bwrc.yml.
+vlsi.core.max_threads: 24
+
+# File inputs
+synthesis.inputs:
+  input_files: [
+                "src/SVM/SVM.sv",
+                "src/SVM/multiply_quantize.sv"
+               ]
+  top_module: "SVM"
+ 
+# General Hammer Inputs
+vlsi.inputs.sram_parameters: "src/sram_inputs.json"
+vlsi.inputs.sram_parameters_meta: ["transclude", "json2list"]
+
+# Hammer will auto-generate a CPF for simple power designs; see hammer/src/hammer-vlsi/defaults.yml for more info
+vlsi.inputs.power_spec_mode: "auto"
+vlsi.inputs.power_spec_type: "cpf"
+
+# Specify clock signals
+vlsi.inputs.clocks: [
+  {name: "clk", period: "10ns", uncertainty: "0.1ns"}
+]
+
+vlsi.inputs.custom_sdc_constraints: [
+  "set_input_delay -clock clk 0 [all_inputs]",
+  "set_output_delay -clock clk 0 [all_outputs]"
+]
+
+# Generate Make include to aid in flow 
+vlsi.core.build_system: make
+
+# Power Straps
+par.power_straps_mode: generate
+par.generate_power_straps_method: by_tracks
+par.blockage_spacing: 2.0
+par.generate_power_straps_options:
+  by_tracks:
+    strap_layers:
+      - M3
+      - M4
+      - M5
+      - M6
+      - M7
+      - M8
+      - M9
+    pin_layers:
+      - M9
+    track_width: 7 # minimum allowed for M2 & M3
+    track_spacing: 0
+    track_spacing_M3: 1 # to avoid M2 shorts at higher density
+    track_start: 10
+    power_utilization: 0.05
+    power_utilization_M8: 1.0
+    power_utilization_M9: 1.0
+
+# Placement Constraints
+vlsi.inputs.placement_constraints:
+  - path: "SVM"
+    type: toplevel
+    x: 0
+    y: 0
+    width: 3000 
+    height: 3000
+    margins:
+      left: 0
+      right: 0
+      top: 0
+      bottom: 0
+  - path: "SVM/place_obs_bottom"
+    type: obstruction
+    obs_types: ["place"]
+    x: 0
+    y: 0
+    width: 3000
+    height: 1.08 # 1 core site tall, necessary to avoid shorts
+
+# VDD supply constraints
+vlsi.inputs.supplies:
+  VDD: "0.80 V"
+  GND: "0 V"
+vlsi.inputs.mmmc_corners: [
+  {
+    "name": "ss0p72v125c",
+    "type": "setup",
+    "voltage": "0.72 V",
+    "temp": "125 C"
+  },
+  {
+    "name": "ff0p88v0c",
+    "type": "hold",
+    "voltage": "0.88 V",
+    "temp": "0 C"
+  },
+  {
+    "name": "tt0p8v25c",
+    "type": "extra",
+    "voltage": "0.80 V",
+    "temp": "25 C"
+  }
+]
+
+# Pin placement constraints
+vlsi.inputs.pin_mode: generated
+vlsi.inputs.pin.generate_mode: semi_auto
+vlsi.inputs.pin.assignments: [
+  {pins: "*", layers: ["M5", "M7"], side: "bottom"}
+]
+
+# SRAM Compiler compiler options
+vlsi.core.sram_generator_tool: "sram_compiler"
+vlsi.core.sram_generator_tool_path: ["hammer-tstech28-plugin"]
+vlsi.core.sram_generator_tool_path_meta: "append"
+

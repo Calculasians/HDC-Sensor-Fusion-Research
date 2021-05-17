@@ -1,0 +1,13 @@
+power.inputs.waveforms_meta: "append"
+power.inputs.waveforms:
+   - "/tools/B/daniels/hammer-tsmc28/build/sim-par-rundir/svm.vcd"
+
+power.inputs.database: "/tools/B/daniels/hammer-tsmc28/build/par-rundir/latest"
+power.inputs.tb_name: "SVM_tb"
+
+power.inputs.saifs_meta: "append"
+power.inputs.saifs:
+   - "/tools/B/daniels/hammer-tsmc28/build/sim-par-rundir/svm.saif"
+
+power.inputs.start_times: ["0"]
+power.inputs.end_times: ["57320"]

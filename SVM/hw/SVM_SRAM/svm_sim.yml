@@ -1,0 +1,27 @@
+sim.inputs.top_module: "SVM"
+sim.inputs.tb_dut: "dut"
+sim.inputs.tb_name: "SVM_tb"
+
+sim.inputs.input_files_meta: "append"
+sim.inputs.input_files:
+   - "src/SVM_SRAM/SVM.sv"
+   - "src/SVM_SRAM/SVM_tb.sv"
+   - "src/SVM_SRAM/multiply_quantize.sv"
+   - "src/SVM_SRAM/SVM_memories_214.sv"
+
+sim.inputs:
+  timescale: "1ns/1ps"
+  options:
+    - "-notice"
+    - "-line"
+    - "-debug_pp"
+    - "-debug_all"
+    - "+v2k"
+    - "+lint=all,noVCDE"
+    - "+incdir+../../src/SVM"
+    - "+define+CLOCK_PERIOD=454"
+    - "-sverilog"
+
+  execute_sim: true
+  execution_flags: ["+verbose=1"]
+
