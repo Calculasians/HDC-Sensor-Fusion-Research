@@ -135,7 +135,7 @@ module hdc_sensor_fusion_tb;
 		rst = 1'b0;
 		repeat (2) @(posedge clk);
 
-		write_sram();
+		//write_sram();
 
 		fork
 			start_fin_sequence();

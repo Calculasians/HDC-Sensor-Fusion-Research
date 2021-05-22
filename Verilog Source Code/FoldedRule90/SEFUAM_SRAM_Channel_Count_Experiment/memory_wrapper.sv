@@ -4,7 +4,7 @@ module memory_wrapper #(
 	parameter FOLD_WIDTH,
 	parameter SRAM_ADDR_WIDTH
 ) (
-	input 		clk,
+	input 		clk, 
 
 	input		we,
 
@@ -23,12 +23,16 @@ module memory_wrapper #(
 
 	assign im_dout = {im_Q4,im_Q3,im_Q2,im_Q1};
 
-	TS1N28HPMFHVTB864X144M4SW IM_SRAM1 (
-		.A 		(im_addr),
-		.D 		(im_din[sram_width-1:0]),
+	imem1 IM_SRAM1 (
+		.RTSEL		(2'b00),
+		.PTSEL		(2'b01),
+		.TRB		(2'b10),
 
-		.BWEB	({sram_width{1'b0}}),
-		.WEB 	(we),
+		.A 		(im_addr),
+		//.D 		(im_din[sram_width-1:0]),
+
+		//.BWEB	({sram_width{1'b0}}),
+		//.WEB 	(we),
 
 		.CEB 	(1'b0),
 		.CLK 	(clk),
@@ -36,12 +40,16 @@ module memory_wrapper #(
 		.Q		(im_Q1)
 	);
 
-	TS1N28HPMFHVTB864X144M4SW IM_SRAM2 (
-		.A 		(im_addr),
-		.D 		(im_din[sram_width*2-1:sram_width]),
+	imem2 IM_SRAM2 (
+		.RTSEL		(2'b00),
+		.PTSEL		(2'b01),
+		.TRB		(2'b10),
 
-		.BWEB	({sram_width{1'b0}}),
-		.WEB 	(we),
+		.A 		(im_addr),
+		//.D 		(im_din[sram_width*2-1:sram_width]),
+
+		//.BWEB	({sram_width{1'b0}}),
+		//.WEB 	(we),
 
 		.CEB 	(1'b0),
 		.CLK 	(clk),
@@ -49,12 +57,16 @@ module memory_wrapper #(
 		.Q		(im_Q2)
 	);
 
-	TS1N28HPMFHVTB864X144M4SW IM_SRAM3 (
-		.A 		(im_addr),
-		.D 		(im_din[sram_width*3-1:sram_width*2]),
+	imem3 IM_SRAM3 (
+		.RTSEL		(2'b00),
+		.PTSEL		(2'b01),
+		.TRB		(2'b10),
 
-		.BWEB	({sram_width{1'b0}}),
-		.WEB 	(we),
+		.A 		(im_addr),
+		//.D 		(im_din[sram_width*3-1:sram_width*2]),
+
+		//.BWEB	({sram_width{1'b0}}),
+		//.WEB 	(we),
 
 		.CEB 	(1'b0),
 		.CLK 	(clk),
@@ -62,12 +74,16 @@ module memory_wrapper #(
 		.Q		(im_Q3)
 	);
 
-	TS1N28HPMFHVTB864X68M4SW IM_SRAM4 (
-		.A 		(im_addr),
-		.D 		(im_din[FOLD_WIDTH-1:sram_width*3]),
+	imem4 IM_SRAM4 (
+		.RTSEL		(2'b00),
+		.PTSEL		(2'b01),
+		.TRB		(2'b10),
 
-		.BWEB	({last_sram_width{1'b0}}),
-		.WEB 	(we),
+		.A 		(im_addr),
+		//.D 		(im_din[FOLD_WIDTH-1:sram_width*3]),
+
+		//.BWEB	({last_sram_width{1'b0}}),
+		//.WEB 	(we),
 
 		.CEB 	(1'b0),
 		.CLK 	(clk),

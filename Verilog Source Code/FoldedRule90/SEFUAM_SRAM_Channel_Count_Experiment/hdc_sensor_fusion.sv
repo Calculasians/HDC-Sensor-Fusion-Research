@@ -9,7 +9,7 @@ module hdc_sensor_fusion #(
 	parameter AM_NUM_FOLDS = 200,
 	parameter SRAM_ADDR_WIDTH = 10,
 	parameter FOLD_WIDTH = `HV_DIMENSION / NUM_FOLDS
-) (
+) ( 
 	input clk,  
 	input rst,   
 

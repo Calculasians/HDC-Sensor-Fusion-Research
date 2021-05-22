@@ -66,8 +66,8 @@ vlsi.inputs.placement_constraints:
     type: toplevel
     x: 0
     y: 0
-    width: 700 
-    height: 700
+    width: 500 
+    height: 500
     margins:
       left: 0
       right: 0
@@ -76,29 +76,29 @@ vlsi.inputs.placement_constraints:
   - path: "hdc_sensor_fusion/HV_GEN/MW/IM_SRAM1"
     type: hardmacro
     x: 50
-    y: 50
-    master: "TS1N28HPMFHVTB864X144M4SW"
+    y: 25
+    master: "imem1"
   - path: "hdc_sensor_fusion/HV_GEN/MW/IM_SRAM2"
     type: hardmacro
-    x: 200
-    y: 50
-    master: "TS1N28HPMFHVTB864X144M4SW"
+    x: 150
+    y: 25
+    master: "imem2"
   - path: "hdc_sensor_fusion/HV_GEN/MW/IM_SRAM3"
     type: hardmacro
-    x: 350
-    y: 50
-    master: "TS1N28HPMFHVTB864X144M4SW"
+    x: 250
+    y: 25
+    master: "imem3"
   - path: "hdc_sensor_fusion/HV_GEN/MW/IM_SRAM4"
     type: hardmacro
-    x: 500
-    y: 50
-    master: "TS1N28HPMFHVTB864X68M4SW"
+    x: 350
+    y: 25
+    master: "imem4"
   - path: "hdc_sensor_fusion/place_obs_bottom"
     type: obstruction
     obs_types: ["place"]
     x: 0
     y: 0
-    width: 700
+    width: 500
     height: 1.08 # 1 core site tall, necessary to avoid shorts
 
 # VDD supply constraints
