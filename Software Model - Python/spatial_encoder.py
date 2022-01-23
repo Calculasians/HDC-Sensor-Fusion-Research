@@ -5,8 +5,9 @@ class SpatialEncoder:
 
 	dimension = 2000
 
-	def __init__(self, num_channel):
+	def __init__(self, num_channel, use_final_hv):
 		self.num_channel = num_channel
+		self.use_final_hv = use_final_hv
 		self.reset()
 
 	# input_B     : List of Series/List of hypervectors coming from the projection memory
@@ -27,11 +28,16 @@ class SpatialEncoder:
 	# Only call this function after all the channels have received and binded their input hypervectors
 	# This is true only after the bind function is called num_channel times
 	def bundle(self):
-		self.bind_input[self.num_channel] = utils.bind([self.bind_input[self.num_channel-1], self.bind_input[1]])
+		if self.use_final_hv:
+			self.bind_input[self.num_channel] = utils.bind([self.bind_input[self.num_channel-1], self.bind_input[1]])
 		self.output_R = pd.Series(utils.bundle(self.bind_input))
 
 	def reset(self):
 		self.input_B     = [None] * self.num_channel
 		self.input_D     = [None] * self.num_channel
-		self.bind_input  = [None] * (self.num_channel + 1)
+
+		if self.use_final_hv:
+			self.bind_input  = [None] * (self.num_channel + 1)
+		else:
+			self.bind_input  = [None] * self.num_channel
 		self.output_R    = None

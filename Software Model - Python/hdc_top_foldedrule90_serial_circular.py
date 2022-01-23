@@ -13,7 +13,7 @@ class HDCTop:
 	dimension           = 2000
 	ngram_size          = 3
 
-	def __init__(self, fm_infile, seed_hv_infile, num_folds, is_early_fusion=True):
+	def __init__(self, fm_infile, seed_hv_infile, num_folds, is_early_fusion=True, use_final_hv=False):
 
 		# Feature Memory
 		self.feature_memory = memory.FeatureMemory(fm_infile)
@@ -30,10 +30,11 @@ class HDCTop:
 		self.associative_memory = memory.AssociativeMemory()
 
 		# Spatial Encoder
+		self.use_final_hv = use_final_hv
 		spatial_encoder.SpatialEncoder.dimension = self.dimension
-		self.spatial_encoder_GSR = spatial_encoder.SpatialEncoder(self.num_channel_GSR)
-		self.spatial_encoder_ECG = spatial_encoder.SpatialEncoder(self.num_channel_ECG)
-		self.spatial_encoder_EEG = spatial_encoder.SpatialEncoder(self.num_channel_EEG)
+		self.spatial_encoder_GSR = spatial_encoder.SpatialEncoder(self.num_channel_GSR, self.use_final_hv)
+		self.spatial_encoder_ECG = spatial_encoder.SpatialEncoder(self.num_channel_ECG, self.use_final_hv)
+		self.spatial_encoder_EEG = spatial_encoder.SpatialEncoder(self.num_channel_EEG, self.use_final_hv)
 
 		# Temporal Encoder
 		temporal_encoder.TemporalEncoder.dimension  = self.dimension
@@ -178,8 +179,10 @@ class HDCTop:
 			self.im.append(utils.gen_next_hv_folded_rule_90_circular(self.im[len(self.im)-1], self.num_folds))
 
 		self.spatial_encoder_GSR.bundle()
+
 		# Generating im one extra time to match hardware (which spends an extra cycle for final_hv)
-		self.im.append(utils.gen_next_hv_folded_rule_90_circular(self.im[len(self.im)-1], self.num_folds))
+		if self.use_final_hv:
+			self.im.append(utils.gen_next_hv_folded_rule_90_circular(self.im[len(self.im)-1], self.num_folds))
 
 		for i in range(self.num_channel_ECG):
 
@@ -194,8 +197,10 @@ class HDCTop:
 			self.im.append(utils.gen_next_hv_folded_rule_90_circular(self.im[len(self.im)-1], self.num_folds))
 
 		self.spatial_encoder_ECG.bundle()
+
 		# Generating im one extra time to match hardware (which spends an extra cycle for final_hv)
-		self.im.append(utils.gen_next_hv_folded_rule_90_circular(self.im[len(self.im)-1], self.num_folds))
+		if self.use_final_hv:
+			self.im.append(utils.gen_next_hv_folded_rule_90_circular(self.im[len(self.im)-1], self.num_folds))
 
 		for i in range(self.num_channel_EEG):
 
