@@ -197,6 +197,7 @@ module hdc_sensor_fusion_tb;
 		$fwrite(power_yml_file, "   - \"/tools/B/daniels/hammer-tsmc28/build/sim-par-rundir/hdc_sensor_fusion.saif\"\n\n");
 		$fwrite(power_yml_file, "power.inputs.start_times: [\"0\"]\n");
 		$fwrite(power_yml_file, "power.inputs.end_times: [\"%0d\"]\n", $time); 
+		$fwrite(power_yml_file, "power.inputs.resolution: %0d", `CLOCK_PERIOD / 2);
 		$fclose(power_yml_file);
 	endfunction : write_power_yml_file
 
