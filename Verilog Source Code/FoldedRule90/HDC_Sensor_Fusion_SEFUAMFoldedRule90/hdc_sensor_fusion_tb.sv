@@ -8,6 +8,8 @@
 // change this in hdc_sensor_fusion.sv as well
 `define SERIAL_CIRCULAR 1;
 
+import "DPI-C" function string getenv(input string env_name);
+
 module hdc_sensor_fusion_tb;
  
 	localparam num_entry				= 20;
@@ -189,12 +191,12 @@ module hdc_sensor_fusion_tb;
 		power_yml_file = $fopen("../../src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/hdc_sensor_fusion_power.yml","w");
 		$fwrite(power_yml_file, "power.inputs.waveforms_meta: \"append\"\n");
 		$fwrite(power_yml_file, "power.inputs.waveforms:\n");
-		$fwrite(power_yml_file, "   - \"/tools/B/daniels/hammer-tsmc28/build/sim-par-rundir/hdc_sensor_fusion.vcd\"\n\n");
-		$fwrite(power_yml_file, "power.inputs.database: \"/tools/B/daniels/hammer-tsmc28/build/par-rundir/latest\"\n");
+		$fwrite(power_yml_file, "   - \"%s/../build/sim-par-rundir/hdc_sensor_fusion.vcd\"\n\n", getenv("HAMMER_HOME"));
+		$fwrite(power_yml_file, "power.inputs.database: \"%s/../build/par-rundir/latest\"\n", getenv("HAMMER_HOME"));
 		$fwrite(power_yml_file, "power.inputs.tb_name: \"hdc_sensor_fusion_tb\"\n\n");
 		$fwrite(power_yml_file, "power.inputs.saifs_meta: \"append\"\n");
 		$fwrite(power_yml_file, "power.inputs.saifs:\n");
-		$fwrite(power_yml_file, "   - \"/tools/B/daniels/hammer-tsmc28/build/sim-par-rundir/hdc_sensor_fusion.saif\"\n\n");
+		$fwrite(power_yml_file, "   - \"%s/../build/sim-par-rundir/hdc_sensor_fusion.saif\"\n\n", getenv("HAMMER_HOME"));
 		$fwrite(power_yml_file, "power.inputs.start_times: [\"0\"]\n");
 		$fwrite(power_yml_file, "power.inputs.end_times: [\"%0d\"]\n", $time); 
 		$fwrite(power_yml_file, "power.inputs.resolution: %0d", `CLOCK_PERIOD / 2);
