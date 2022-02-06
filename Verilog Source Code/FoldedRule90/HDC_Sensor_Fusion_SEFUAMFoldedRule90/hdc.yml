@@ -10,7 +10,8 @@ synthesis.inputs:
                 "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/temporal_encoder.sv",
                 "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/fuser.sv",
                 "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/hv_binary_adder.sv",
-                "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/hv_generator_serial_circular.sv"
+                "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/hv_generator_serial_circular.sv",
+                "src/HDC_Sensor_Fusion_SEFUAMFoldedRule90/fuser_fanout_reduced.sv"
                ]
   top_module: "hdc_sensor_fusion"
  

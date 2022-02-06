@@ -18,6 +18,9 @@
 `define MAX_NUM_CHANNEL_WIDTH	7
 `define MAX_HALF_NUM_CHANNEL_WIDTH  6
 
+`define NUM_FOLDS               8
+`define AM_NUM_FOLDS            400
+
 `define NUM_MODALITY			3
 `define NUM_MODALITY_WIDTH		2
 

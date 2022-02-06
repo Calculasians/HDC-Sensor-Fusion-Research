@@ -17,8 +17,8 @@ module hdc_sensor_fusion_tb;
 	localparam max_wait_time_width		= `ceilLog2(max_wait_time);
 
 	// Should be a factor of 2000 (or `HV_DIMENSION)
-	localparam num_folds 	= 4;
-	localparam am_num_folds = 200;
+	localparam num_folds 	= `NUM_FOLDS;
+	localparam am_num_folds = `AM_NUM_FOLDS;
 
 	reg clk, rst;
  
@@ -102,6 +102,7 @@ module hdc_sensor_fusion_tb;
 
 	initial begin
 		$vcdpluson;
+		$vcdplusmemon;
 		$dumpfile("hdc_sensor_fusion.vcd");
 		$dumpvars(1, hdc_sensor_fusion_tb.dut);
 		$set_toggle_region(dut);
@@ -153,6 +154,7 @@ module hdc_sensor_fusion_tb;
 
 		$toggle_stop();
 		$toggle_report("../../build/sim-par-rundir/hdc_sensor_fusion.saif", 1.0e-9, dut);
+		$vcdplusmemoff;
 		$vcdplusoff;
 		$finish();
 	end

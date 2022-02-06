@@ -4,9 +4,12 @@
 // 0 if resetting im generation at the beginning of each modality
 `define SERIAL_CIRCULAR 1;
 
+// 1 if we want to duplicate fold_counter registers in fuser for fanout reduction
+`define FUSER_FANOUT_REDUCED 1;
+
 module hdc_sensor_fusion #(
-	parameter NUM_FOLDS = 4, 
-	parameter AM_NUM_FOLDS = 200
+	parameter NUM_FOLDS = `NUM_FOLDS, 
+	parameter AM_NUM_FOLDS = `AM_NUM_FOLDS
 ) (
 	input clk,  
 	input rst,   
@@ -138,6 +141,26 @@ module hdc_sensor_fusion #(
 		.done 			(se_done)
 	);
    	
+	`ifdef FUSER_FANOUT_REDUCED
+	fuser_fanout_reduced #(
+		.NUM_FOLDS          (NUM_FOLDS),
+		.NUM_FOLDS_WIDTH    (NUM_FOLDS_WIDTH),
+		.FOLD_WIDTH         (FOLD_WIDTH)
+	) FUSER (
+		.clk			(clk),
+		.rst			(rst),
+
+		.hvin_valid		(se_hvout_valid),
+		.hvin_ready		(fuser_hvin_ready),
+		.hvin			(se_hvout),
+		.fold_counter 	(se_fold_counter),
+		.done 			(se_done),
+
+		.hvout_valid	(fuser_hvout_valid),
+		.hvout_ready	(te_hvin_ready),
+		.hvout			(fuser_hvout)
+	);
+	`else
 	fuser #(
 		.NUM_FOLDS          (NUM_FOLDS),
 		.NUM_FOLDS_WIDTH    (NUM_FOLDS_WIDTH),
@@ -156,6 +179,7 @@ module hdc_sensor_fusion #(
 		.hvout_ready	(te_hvin_ready),
 		.hvout			(fuser_hvout)
 	);
+	`endif
 
 	temporal_encoder TE (
 		.clk			(clk),
