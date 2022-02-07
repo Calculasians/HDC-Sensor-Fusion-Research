@@ -1,11 +1,11 @@
 `include "const.vh"
 
-// 1 if generating 214 unique ims and using circular shifts, 
-// 0 if resetting im generation at the beginning of each modality
+// uncomment if generating 214 unique ims and using circular shifts, 
+// comment if resetting im generation at the beginning of each modality
 `define SERIAL_CIRCULAR 1;
 
-// 1 if we want to duplicate fold_counter registers in fuser for fanout reduction
-`define FUSER_FANOUT_REDUCED 1;
+// uncomment if we want to duplicate fold_counter registers in fuser for fanout reduction
+// `define FUSER_FANOUT_REDUCED 1;
 
 module hdc_sensor_fusion #(
 	parameter NUM_FOLDS = `NUM_FOLDS, 

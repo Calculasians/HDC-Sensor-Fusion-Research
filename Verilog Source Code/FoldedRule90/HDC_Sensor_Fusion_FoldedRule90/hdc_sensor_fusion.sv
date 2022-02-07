@@ -1,7 +1,8 @@
 `include "const.vh"
 
 module hdc_sensor_fusion #(
-	parameter NUM_FOLDS = 100
+	parameter NUM_FOLDS = `NUM_FOLDS,
+	parameter AM_NUM_FOLDS = `AM_NUM_FOLDS
 ) (
 	input clk,  
 	input rst,
@@ -22,6 +23,9 @@ module hdc_sensor_fusion #(
 
 	localparam NUM_FOLDS_WIDTH		= `ceilLog2(NUM_FOLDS);
 	localparam FOLD_WIDTH			= 2000 / NUM_FOLDS;
+
+	localparam AM_NUM_FOLDS_WIDTH	= `ceilLog2(AM_NUM_FOLDS);
+	localparam AM_FOLD_WIDTH 		= FOLD_WIDTH / AM_NUM_FOLDS;
 
 	//----------// 
 	// Features // 
@@ -156,7 +160,11 @@ module hdc_sensor_fusion #(
 	associative_memory #(
 		.NUM_FOLDS          (NUM_FOLDS),
 		.NUM_FOLDS_WIDTH    (NUM_FOLDS_WIDTH),
-		.FOLD_WIDTH         (FOLD_WIDTH)
+		.FOLD_WIDTH         (FOLD_WIDTH),
+
+		.AM_NUM_FOLDS          (AM_NUM_FOLDS),
+		.AM_NUM_FOLDS_WIDTH    (AM_NUM_FOLDS_WIDTH),
+		.AM_FOLD_WIDTH         (AM_FOLD_WIDTH)
 	) AM (
 		.clk			(clk),
 		.rst			(rst),

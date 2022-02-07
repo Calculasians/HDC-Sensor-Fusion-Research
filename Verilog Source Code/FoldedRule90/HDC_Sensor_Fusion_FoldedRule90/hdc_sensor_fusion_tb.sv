@@ -1,15 +1,18 @@
 `timescale 1ns / 1ps
 `include "const.vh"
-//`define GL_SIM 1 // keep if doing gate-level simulation
+`define GL_SIM 1 // keep if doing gate-level simulation
+
+import "DPI-C" function string getenv(input string env_name);
 
 module hdc_sensor_fusion_tb;
 
 	localparam num_entry				= 20;
-	localparam max_wait_time			= 16;
+	localparam max_wait_time			= 0;  // set to 0 to not wait between classifications
 	localparam max_wait_time_width		= `ceilLog2(max_wait_time);
 
 	// Should be a factor of 2000 (or `HV_DIMENSION)
-	localparam num_folds 	= 20;
+	localparam num_folds 	= `NUM_FOLDS;
+	localparam am_num_folds	= `AM_NUM_FOLDS;
 
 	reg clk, rst;
 
@@ -29,7 +32,8 @@ module hdc_sensor_fusion_tb;
 	hdc_sensor_fusion
 	`ifndef GL_SIM
 	   #(	
-            .NUM_FOLDS          (num_folds)
+            .NUM_FOLDS          (num_folds),
+			.AM_NUM_FOLDS		(am_num_folds)
         ) dut (
 	`else
 		dut (
@@ -50,6 +54,8 @@ module hdc_sensor_fusion_tb;
 	//-------//
 	// Files //
 	//-------//
+
+	integer power_yml_file;
 
 	integer feature_file;
 	string  expected_v_filename;
@@ -91,6 +97,8 @@ module hdc_sensor_fusion_tb;
 	initial begin
 		$vcdpluson;
 		$vcdplusmemon;
+		$dumpfile("hdc_sensor_fusion.vcd");
+		$dumpvars(1, hdc_sensor_fusion_tb.dut);
 		$set_toggle_region(dut);
 		$toggle_start();
 
@@ -134,11 +142,14 @@ module hdc_sensor_fusion_tb;
 			$display("All entries matched!\n");
 		else
 			$display("%d entries does not matched\n\n!", num_fail);
+			
+		$display("Simulation ended at time : %0d ns\n", $time);
+		write_power_yml_file();
 
 		$toggle_stop();
 		$toggle_report("../../build/sim-par-rundir/hdc_sensor_fusion.saif", 1.0e-9, dut);
-		$vcdplusoff;
 		$vcdplusmemoff;
+		$vcdplusoff;
 		$finish();
 	end
 
@@ -166,6 +177,22 @@ module hdc_sensor_fusion_tb;
 		end
 
 	endfunction : initialize_memory
+
+	function void write_power_yml_file();
+		power_yml_file = $fopen("../../src/HDC_Sensor_Fusion_FoldedRule90/hdc_sensor_fusion_power.yml","w");
+		$fwrite(power_yml_file, "power.inputs.waveforms_meta: \"append\"\n");
+		$fwrite(power_yml_file, "power.inputs.waveforms:\n");
+		$fwrite(power_yml_file, "   - \"%s/../build/sim-par-rundir/hdc_sensor_fusion.vcd\"\n\n", getenv("HAMMER_HOME"));
+		$fwrite(power_yml_file, "power.inputs.database: \"%s/../build/par-rundir/latest\"\n", getenv("HAMMER_HOME"));
+		$fwrite(power_yml_file, "power.inputs.tb_name: \"hdc_sensor_fusion_tb\"\n\n");
+		$fwrite(power_yml_file, "power.inputs.saifs_meta: \"append\"\n");
+		$fwrite(power_yml_file, "power.inputs.saifs:\n");
+		$fwrite(power_yml_file, "   - \"%s/../build/sim-par-rundir/hdc_sensor_fusion.saif\"\n\n", getenv("HAMMER_HOME"));
+		$fwrite(power_yml_file, "power.inputs.start_times: [\"0\"]\n");
+		$fwrite(power_yml_file, "power.inputs.end_times: [\"%0d\"]\n", $time); 
+		$fwrite(power_yml_file, "power.inputs.resolution: %0d", `CLOCK_PERIOD / 2);
+		$fclose(power_yml_file);
+	endfunction : write_power_yml_file
 
 	task start_cycle_counter;
 		while (done == 0) begin
