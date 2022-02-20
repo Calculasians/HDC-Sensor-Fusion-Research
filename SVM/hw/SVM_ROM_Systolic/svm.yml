@@ -1,0 +1,195 @@
+# Technology Setup is done in hammer-tstech28-plugin/bwrc.yml.
+vlsi.core.max_threads: 24
+
+# File inputs
+synthesis.inputs:
+  input_files: [
+                "src/SVM_ROM_Systolic/SVM.sv",
+                "src/SVM_ROM_Systolic/systolic_array.sv",
+                "src/SVM_ROM_Systolic/SVM_memories_214.sv"
+               ]
+  top_module: "SVM"
+ 
+# General Hammer Inputs
+vlsi.inputs.sram_parameters: "src/sram_inputs.json"
+vlsi.inputs.sram_parameters_meta: ["transclude", "json2list"]
+
+# Hammer will auto-generate a CPF for simple power designs; see hammer/src/hammer-vlsi/defaults.yml for more info
+vlsi.inputs.power_spec_mode: "auto"
+vlsi.inputs.power_spec_type: "cpf"
+
+# Specify clock signals
+vlsi.inputs.clocks: [
+  {name: "clk", period: "840ns", uncertainty: "0.1ns"}
+]
+
+vlsi.inputs.custom_sdc_constraints: [
+  "set_input_delay -clock clk 0 [all_inputs]",
+  "set_output_delay -clock clk 0 [all_outputs]"
+]
+
+# Generate Make include to aid in flow 
+vlsi.core.build_system: make
+
+# Power Straps
+par.power_straps_mode: generate
+par.generate_power_straps_method: by_tracks
+par.blockage_spacing: 2.0
+par.generate_power_straps_options:
+  by_tracks:
+    strap_layers:
+      - M3
+      - M4
+      - M5
+      - M6
+      - M7
+      - M8
+      - M9
+    pin_layers:
+      - M9
+    track_width: 7 # minimum allowed for M2 & M3
+    track_spacing: 0
+    track_spacing_M3: 1 # to avoid M2 shorts at higher density
+    track_start: 10
+    power_utilization: 0.05
+    power_utilization_M8: 1.0
+    power_utilization_M9: 1.0
+
+# Placement Constraints
+vlsi.inputs.placement_constraints:
+  - path: "SVM"
+    type: toplevel
+    x: 0
+    y: 0
+    width: 2100 
+    height: 1500
+    margins:
+      left: 0
+      right: 0
+      top: 0
+      bottom: 0
+  - path: "SVM/mem/ROM0"
+    type: hardmacro
+    x: 221.8
+    y: 700
+    master: "imem0"
+  - path: "SVM/mem/ROM1"
+    type: hardmacro
+    x: 337.3
+    y: 700
+    master: "imem1"
+  - path: "SVM/mem/ROM2"
+    type: hardmacro
+    x: 452.8
+    y: 700
+    master: "imem2"
+  - path: "SVM/mem/ROM3"
+    type: hardmacro
+    x: 568.3
+    y: 700
+    master: "imem3"
+  - path: "SVM/mem/ROM4"
+    type: hardmacro
+    x: 683.8
+    y: 700
+    master: "imem4"
+  - path: "SVM/mem/ROM5"
+    type: hardmacro
+    x: 799.3
+    y: 700
+    master: "imem5"
+  - path: "SVM/mem/ROM6"
+    type: hardmacro
+    x: 914.8
+    y: 700
+    master: "imem6"
+  - path: "SVM/mem/ROM7"
+    type: hardmacro
+    x: 1030.3
+    y: 700
+    master: "imem7"
+  - path: "SVM/mem/ROM8"
+    type: hardmacro
+    x: 1145.8
+    y: 700
+    master: "imem8"
+  - path: "SVM/mem/ROM9"
+    type: hardmacro
+    x: 1261.3
+    y: 700
+    master: "imem9"
+  - path: "SVM/mem/ROM10"
+    type: hardmacro
+    x: 1376.8
+    y: 700
+    master: "imem10"
+  - path: "SVM/mem/ROM11"
+    type: hardmacro
+    x: 1492.3
+    y: 700
+    master: "imem11"
+  - path: "SVM/mem/ROM12"
+    type: hardmacro
+    x: 1607.8
+    y: 700
+    master: "imem12"
+  - path: "SVM/mem/ROM13"
+    type: hardmacro
+    x: 1723.3
+    y: 700
+    master: "imem13"
+  - path: "SVM/mem/ROM14"
+    type: hardmacro
+    x: 1838.8
+    y: 700
+    master: "imem14"
+  - path: "SVM/mem/ROM15"
+    type: hardmacro
+    x: 1954.3
+    y: 700
+    master: "imem15"
+  - path: "SVM/place_obs_bottom"
+    type: obstruction
+    obs_types: ["place"]
+    x: 0
+    y: 0
+    width: 2100
+    height: 1.08 # 1 core site tall, necessary to avoid shorts
+
+# VDD supply constraints
+vlsi.inputs.supplies:
+  VDD: "0.90 V"
+  GND: "0 V"
+vlsi.inputs.mmmc_corners: [
+  {
+    "name": "ss0p81v125c",
+    "type": "setup",
+    "voltage": "0.81 V",
+    "temp": "125 C"
+  },
+  {
+    "name": "ff0p99v0c",
+    "type": "hold",
+    "voltage": "0.99 V",
+    "temp": "0 C"
+  },
+  {
+    "name": "tt0p9v25c",
+    "type": "extra",
+    "voltage": "0.90 V",
+    "temp": "25 C"
+  }
+]
+
+# Pin placement constraints
+vlsi.inputs.pin_mode: generated
+vlsi.inputs.pin.generate_mode: semi_auto
+vlsi.inputs.pin.assignments: [
+  {pins: "*", layers: ["M5", "M7"], side: "bottom"}
+]
+
+# SRAM Compiler compiler options
+vlsi.core.sram_generator_tool: "sram_compiler"
+vlsi.core.sram_generator_tool_path: ["hammer-tstech28-plugin"]
+vlsi.core.sram_generator_tool_path_meta: "append"
+

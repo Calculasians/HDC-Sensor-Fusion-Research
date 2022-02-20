@@ -4,10 +4,10 @@ sim.inputs.tb_name: "SVM_tb"
 
 sim.inputs.input_files_meta: "append"
 sim.inputs.input_files:
-   - "src/SVM_ROM_Naive/SVM.sv"
-   - "src/SVM_ROM_Naive/SVM_tb.sv"
-   - "src/SVM_ROM_Naive/multiply_quantize.sv"
-   - "src/SVM_ROM_Naive/SVM_memories_214.sv"
+   - "src/SVM_ROM_Systolic/SVM.sv"
+   - "src/SVM_ROM_Systolic/SVM_tb.sv"
+   - "src/SVM_ROM_Systolic/SVM_memories_214.sv"
+   - "src/SVM_ROM_Systolic/systolic_array.sv"
 
 sim.inputs:
   timescale: "1ns/1ps"
@@ -18,8 +18,8 @@ sim.inputs:
     - "-debug_all"
     - "+v2k"
     - "+lint=all,noVCDE"
-    - "+incdir+../../src/SVM_ROM_Naive"
-    - "+define+CLOCK_PERIOD=4"
+    - "+incdir+../../src/SVM_ROM_Systolic"
+    - "+define+CLOCK_PERIOD=840"
     - "-sverilog"
 
   execute_sim: true
