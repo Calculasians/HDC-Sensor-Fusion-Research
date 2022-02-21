@@ -62,7 +62,7 @@ vlsi.inputs.placement_constraints:
     x: 0
     y: 0
     width: 2100 
-    height: 1500
+    height: 700
     margins:
       left: 0
       right: 0
@@ -71,82 +71,82 @@ vlsi.inputs.placement_constraints:
   - path: "SVM/mem/ROM0"
     type: hardmacro
     x: 221.8
-    y: 700
+    y: 70
     master: "imem0"
   - path: "SVM/mem/ROM1"
     type: hardmacro
     x: 337.3
-    y: 700
+    y: 70
     master: "imem1"
   - path: "SVM/mem/ROM2"
     type: hardmacro
     x: 452.8
-    y: 700
+    y: 70
     master: "imem2"
   - path: "SVM/mem/ROM3"
     type: hardmacro
     x: 568.3
-    y: 700
+    y: 70
     master: "imem3"
   - path: "SVM/mem/ROM4"
     type: hardmacro
     x: 683.8
-    y: 700
+    y: 70
     master: "imem4"
   - path: "SVM/mem/ROM5"
     type: hardmacro
     x: 799.3
-    y: 700
+    y: 70
     master: "imem5"
   - path: "SVM/mem/ROM6"
     type: hardmacro
     x: 914.8
-    y: 700
+    y: 70
     master: "imem6"
   - path: "SVM/mem/ROM7"
     type: hardmacro
     x: 1030.3
-    y: 700
+    y: 70
     master: "imem7"
   - path: "SVM/mem/ROM8"
     type: hardmacro
     x: 1145.8
-    y: 700
+    y: 70
     master: "imem8"
   - path: "SVM/mem/ROM9"
     type: hardmacro
     x: 1261.3
-    y: 700
+    y: 70
     master: "imem9"
   - path: "SVM/mem/ROM10"
     type: hardmacro
     x: 1376.8
-    y: 700
+    y: 70
     master: "imem10"
   - path: "SVM/mem/ROM11"
     type: hardmacro
     x: 1492.3
-    y: 700
+    y: 70
     master: "imem11"
   - path: "SVM/mem/ROM12"
     type: hardmacro
     x: 1607.8
-    y: 700
+    y: 70
     master: "imem12"
   - path: "SVM/mem/ROM13"
     type: hardmacro
     x: 1723.3
-    y: 700
+    y: 70
     master: "imem13"
   - path: "SVM/mem/ROM14"
     type: hardmacro
     x: 1838.8
-    y: 700
+    y: 70
     master: "imem14"
   - path: "SVM/mem/ROM15"
     type: hardmacro
     x: 1954.3
-    y: 700
+    y: 70
     master: "imem15"
   - path: "SVM/place_obs_bottom"
     type: obstruction

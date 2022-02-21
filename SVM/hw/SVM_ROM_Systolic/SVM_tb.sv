@@ -4,7 +4,7 @@
 
 module SVM_tb;
 
-    localparam num_entry        = 20; // total = 159
+    localparam num_entry        = 4; // total = 159
 
     localparam NBITS            = `NBITS;
 
@@ -146,14 +146,14 @@ module SVM_tb;
         integer i;
 		integer j;
 
-		$sformat(v_feature_filename, "../../src/SVM_SRAM/RFE_%0d_nbits_%0d_v_features.txt", F_WIDTH, NBITS);
+		$sformat(v_feature_filename, "../../src/SVM_ROM_Systolic/RFE_%0d_nbits_%0d_v_features.txt", F_WIDTH, NBITS);
         v_feature_file = $fopen(v_feature_filename, "r");
 
-		$sformat(a_feature_filename, "../../src/SVM_SRAM/RFE_%0d_nbits_%0d_a_features.txt", F_WIDTH, NBITS);
+		$sformat(a_feature_filename, "../../src/SVM_ROM_Systolic/RFE_%0d_nbits_%0d_a_features.txt", F_WIDTH, NBITS);
         a_feature_file = $fopen(a_feature_filename, "r");
 
-		$sformat(v_expected_filename, "../../src/SVM_SRAM/RFE_%0d_nbits_%0d_v_expected.txt", F_WIDTH, NBITS);
-		$sformat(a_expected_filename, "../../src/SVM_SRAM/RFE_%0d_nbits_%0d_a_expected.txt", F_WIDTH, NBITS);
+		$sformat(v_expected_filename, "../../src/SVM_ROM_Systolic/RFE_%0d_nbits_%0d_v_expected.txt", F_WIDTH, NBITS);
+		$sformat(a_expected_filename, "../../src/SVM_ROM_Systolic/RFE_%0d_nbits_%0d_a_expected.txt", F_WIDTH, NBITS);
         v_expected_file = $fopen(v_expected_filename, "r");
         a_expected_file = $fopen(a_expected_filename, "r");
 
@@ -179,7 +179,7 @@ module SVM_tb;
     endfunction : initialize_memory
 
 	function void write_power_yml_file();
-		power_yml_file = $fopen("../../src/SVM_SRAM/svm_power.yml","w");
+		power_yml_file = $fopen("../../src/SVM_ROM_Systolic/svm_power.yml","w");
 		$fwrite(power_yml_file, "power.inputs.waveforms_meta: \"append\"\n");
 		$fwrite(power_yml_file, "power.inputs.waveforms:\n");
 		$fwrite(power_yml_file, "   - \"/tools/B/daniels/hammer-tsmc28/build/sim-par-rundir/svm.vcd\"\n\n");
@@ -190,6 +190,7 @@ module SVM_tb;
 		$fwrite(power_yml_file, "   - \"/tools/B/daniels/hammer-tsmc28/build/sim-par-rundir/svm.saif\"\n\n");
 		$fwrite(power_yml_file, "power.inputs.start_times: [\"0\"]\n");
 		$fwrite(power_yml_file, "power.inputs.end_times: [\"%0d\"]\n", $time); 
+		$fwrite(power_yml_file, "power.inputs.resolution: %0d", `CLOCK_PERIOD / 2);
 		$fclose(power_yml_file);
 	endfunction : write_power_yml_file
 
