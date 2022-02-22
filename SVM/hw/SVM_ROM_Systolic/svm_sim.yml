@@ -8,6 +8,11 @@ sim.inputs.input_files:
    - "src/SVM_ROM_Systolic/SVM_tb.sv"
    - "src/SVM_ROM_Systolic/SVM_memories_214.sv"
    - "src/SVM_ROM_Systolic/systolic_array.sv"
+   - "src/SVM_ROM_Systolic/SVM_control.sv"
+   - "src/SVM_ROM_Systolic/SVM_Matmul1.sv"
+   - "src/SVM_ROM_Systolic/SVM_Matmul2.sv"
+   - "src/SVM_ROM_Systolic/SVM_memory_wrapper.sv"
+   - "src/SVM_ROM_Systolic/SVM_decision.sv"
 
 sim.inputs:
   timescale: "1ns/1ps"

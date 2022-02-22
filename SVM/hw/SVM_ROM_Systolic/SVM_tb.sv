@@ -112,7 +112,6 @@ module SVM_tb;
 		repeat (2) @(posedge clk);
 
 		fork
-			// print_state_machines();
 			start_fin_sequence();
 			start_fin_monitor();
 
@@ -284,14 +283,5 @@ module SVM_tb;
 		done = 1;
 
 	endtask : start_dout_monitor
-
-	task print_state_machines;
-
-		while (done == 0) begin
-			@(negedge clk);
-			$display("Read State: %d, Comp State: %d, Write State: %d \n", dut.read_state, dut.comp_state, dut.write_state);
-		end
-
-	endtask : print_state_machines
 
 endmodule : SVM_tb
