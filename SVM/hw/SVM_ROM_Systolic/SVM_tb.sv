@@ -4,7 +4,7 @@
 
 module SVM_tb;
 
-    localparam num_entry        = 4; // total = 159
+    localparam num_entry        = 20; // total = 159
 
     localparam NBITS            = `NBITS;
 

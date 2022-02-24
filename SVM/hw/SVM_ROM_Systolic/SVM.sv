@@ -46,7 +46,7 @@ module SVM #(
 	localparam ROM_DEPTH			= 1024;
 	localparam LOG_ROM_DEPTH		= `ceilLog2(ROM_DEPTH);
     localparam ROM_WIDTH            = 128;
-    localparam ROM_TOTAL_WIDTH      = 2048;
+    localparam ROM_TOTAL_WIDTH      = `ROM_TOTAL_WIDTH;
 
     // Base addresses for ROM accesses
     localparam VSUP_BASE_ADDR       = 0;

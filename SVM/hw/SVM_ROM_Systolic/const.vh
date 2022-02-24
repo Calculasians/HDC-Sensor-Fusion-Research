@@ -7,8 +7,10 @@
 `define ASUP_WIDTH 155
 `define F_WIDTH 214
 
-`define V_NPARALLEL 30
-`define A_NPARALLEL 31
+`define V_INTERCEPT -20662
+`define A_INTERCEPT -72281
+
+`define ROM_TOTAL_WIDTH 2048
 
 `define ceilLog2(x) ( \
 (x) > 2**30 ? 31 : \

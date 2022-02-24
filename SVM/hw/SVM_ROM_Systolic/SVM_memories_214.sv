@@ -1,13 +1,13 @@
 `include "const.vh"
 
 module SVM_memories_214 #(
-	parameter NBITS				= 9,
-	parameter VSUP_WIDTH 		= 120,
-	parameter ASUP_WIDTH		= 155,
-	parameter ROM_DEPTH			= 1024,
-	parameter LOG_ROM_DEPTH		= `ceilLog2(ROM_DEPTH),
-	parameter ROM_WIDTH 		= 128,
-	parameter ROM_TOTAL_WIDTH	= 2048
+	parameter NBITS,
+	parameter VSUP_WIDTH,
+	parameter ASUP_WIDTH,
+	parameter ROM_DEPTH,
+	parameter LOG_ROM_DEPTH,
+	parameter ROM_WIDTH,
+	parameter ROM_TOTAL_WIDTH
 ) (
 	input 									clk,
 

@@ -50,8 +50,9 @@ module SVM_memory_wrapper #(
     assign a_support        = mem_out[ROM_TOTAL_WIDTH-1:ROM_TOTAL_WIDTH-(NBITS*F_WIDTH)];
     assign v_alpha          = mem_out[ROM_TOTAL_WIDTH-1:ROM_TOTAL_WIDTH-(NBITS)];
     assign a_alpha          = mem_out[ROM_TOTAL_WIDTH-1:ROM_TOTAL_WIDTH-(NBITS)];
-    assign v_intercept      = 26'b11111111111010111101001010; // -20662
-    assign a_intercept      = 26'b11111111101110010110100111; // -72281
+    // 
+    assign v_intercept      = `V_INTERCEPT;
+    assign a_intercept      = `A_INTERCEPT;
 
 //-----------------------------------------//
 //            SVM ROM Memories             //
